@@ -2,6 +2,9 @@ import React from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { prop, remSize } from '../../theme';
+import IconButton from './IconButton';
+
+import AstriskIcon from '../../images/p5-asterisk.svg';
 
 const background = ({ transparent, inverted }) =>
   prop(
@@ -23,8 +26,8 @@ const HeaderDiv = styled.div`
   background: ${(props) => background(props)};
   color: ${textColor};
   padding: ${(props) => remSize(props.slim === true ? 2 : 12)};
-  padding-left: ${remSize(16)};
-  padding-right: ${remSize(16)};
+  padding-left: ${remSize(8)};
+  padding-right: ${remSize(8)};
   z-index: 1;
 
   display: flex;
@@ -40,6 +43,10 @@ const HeaderDiv = styled.div`
 
   & svg path {
     fill: ${textColor} !important;
+  }
+
+  #p5asterisk-button path {
+    fill: ${prop('colors.p5jsPink')} !important;
   }
 
   .editor__unsaved-changes svg {
@@ -84,7 +91,10 @@ const Header = ({
     inverted={inverted}
     fixed={fixed}
   >
-    {leftButton}
+    <IconContainer>
+      <IconButton id="p5asterisk-button" icon={AstriskIcon} />
+    </IconContainer>
+    {/* {leftButton} */}
     <TitleContainer padded={subtitle === null}>
       {title && <h2>{title}</h2>}
       {subtitle && <h3>{subtitle}</h3>}

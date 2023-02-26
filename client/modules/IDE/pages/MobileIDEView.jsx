@@ -372,7 +372,7 @@ const MobileIDEView = (props) => {
           />
           <NavDropDown />
         </NavItem>
-        <li>
+        {/* <li>
           <IconButton
             to="/preview"
             onClick={() => {
@@ -381,7 +381,7 @@ const MobileIDEView = (props) => {
             icon={PlayIcon}
             aria-label="Run sketch"
           />
-        </li>
+        </li> */}
       </Header>
       {toast.isVisible && <Toast />}
 
