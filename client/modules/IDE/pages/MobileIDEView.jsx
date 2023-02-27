@@ -49,6 +49,7 @@ import {
 } from '../hooks/custom-hooks';
 
 import * as device from '../../../utils/device';
+import FloatingNav from '../../../components/mobile/FloatingNav';
 
 const withChangeDot = (title, unsavedChanges = false) => (
   <span>
@@ -388,6 +389,18 @@ const MobileIDEView = (props) => {
       <IDEWrapper>
         <Editor provideController={setCmController} />
       </IDEWrapper>
+
+      <FloatingNav
+        items={[
+          {
+            icon: PlayIcon,
+            onPress: () => {
+              startSketch();
+            },
+            to: '/preview'
+          }
+        ]}
+      />
 
       <Footer>
         {consoleIsExpanded && (
