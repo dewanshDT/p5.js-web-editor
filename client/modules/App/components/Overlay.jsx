@@ -1,101 +1,101 @@
 import PropTypes from 'prop-types';
-import React from 'react';
-import { browserHistory } from 'react-router';
+import React, { useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
 
 import ExitIcon from '../../../images/exit.svg';
 
-class Overlay extends React.Component {
-  constructor(props) {
-    super(props);
-    this.close = this.close.bind(this);
-    this.handleClick = this.handleClick.bind(this);
-    this.handleClickOutside = this.handleClickOutside.bind(this);
-    this.keyPressHandle = this.keyPressHandle.bind(this);
-  }
+const Overlay = ({
+  closeOverlay,
+  previousPath,
+  ariaLabel,
+  title,
+  children,
+  actions,
+  isFixedHeight
+}) => {
+  const ref = useRef(null);
+  const navigate = useNavigate();
 
-  componentWillMount() {
-    document.addEventListener('mousedown', this.handleClick, false);
-    document.addEventListener('keydown', this.keyPressHandle);
-  }
+  const close = () => {
+    // Only close if it is the last (and therefore the topmost overlay)
+    const overlays = document.getElementsByClassName('overlay');
+    if (
+      ref.current.parentElement.parentElement !== overlays[overlays.length - 1]
+    )
+      return;
 
-  componentDidMount() {
-    this.node.focus();
-  }
+    if (!closeOverlay) {
+      navigate(previousPath);
+    } else {
+      closeOverlay();
+    }
+  };
 
-  componentWillUnmount() {
-    document.removeEventListener('mousedown', this.handleClick, false);
-    document.removeEventListener('keydown', this.keyPressHandle);
-  }
+  const handleClickOutside = () => {
+    close();
+  };
 
-  handleClick(e) {
-    if (this.node.contains(e.target)) {
+  const handleClick = (e) => {
+    if (ref.current.contains(e.target)) {
       return;
     }
 
-    this.handleClickOutside(e);
-  }
+    handleClickOutside(e);
+  };
 
-  handleClickOutside() {
-    this.close();
-  }
-
-  keyPressHandle(e) {
+  const keyPressHandle = (e) => {
     // escape key code = 27.
     // So here we are checking if the key pressed was Escape key.
     if (e.keyCode === 27) {
-      this.close();
+      close();
     }
-  }
+  };
 
-  close() {
-    // Only close if it is the last (and therefore the topmost overlay)
-    const overlays = document.getElementsByClassName('overlay');
-    if (this.node.parentElement.parentElement !== overlays[overlays.length - 1])
-      return;
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClick, false);
+    document.addEventListener('keydown', keyPressHandle);
 
-    if (!this.props.closeOverlay) {
-      browserHistory.push(this.props.previousPath);
-    } else {
-      this.props.closeOverlay();
-    }
-  }
+    ref.current.focus();
 
-  render() {
-    const { ariaLabel, title, children, actions, isFixedHeight } = this.props;
-    return (
-      <div
-        className={`overlay ${isFixedHeight ? 'overlay--is-fixed-height' : ''}`}
-      >
-        <div className="overlay__content">
-          <section
-            role="main"
-            aria-label={ariaLabel}
-            ref={(node) => {
-              this.node = node;
-            }}
-            className="overlay__body"
-          >
-            <header className="overlay__header">
-              <h2 className="overlay__title">{title}</h2>
-              <div className="overlay__actions">
-                {actions}
-                <button
-                  className="overlay__close-button"
-                  onClick={this.close}
-                  aria-label={this.props.t('Overlay.AriaLabel', { title })}
-                >
-                  <ExitIcon focusable="false" aria-hidden="true" />
-                </button>
-              </div>
-            </header>
-            {children}
-          </section>
-        </div>
+    return () => {
+      document.removeEventListener('mousedown', handleClick, false);
+      document.removeEventListener('keydown', keyPressHandle);
+    };
+  });
+
+  return (
+    <div
+      className={`overlay ${isFixedHeight ? 'overlay--is-fixed-height' : ''}`}
+    >
+      <div className="overlay__content">
+        <section
+          role="main"
+          aria-label={ariaLabel}
+          ref={(node) => {
+            this.node = node;
+          }}
+          className="overlay__body"
+        >
+          <header className="overlay__header">
+            <h2 className="overlay__title">{title}</h2>
+            <div className="overlay__actions">
+              {actions}
+              <button
+                className="overlay__close-button"
+                onClick={close}
+                aria-label={this.props.t('Overlay.AriaLabel', { title })}
+              >
+                <ExitIcon focusable="false" aria-hidden="true" />
+              </button>
+            </div>
+          </header>
+          {children}
+        </section>
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
 
 Overlay.propTypes = {
   children: PropTypes.element,
@@ -104,8 +104,7 @@ Overlay.propTypes = {
   title: PropTypes.string,
   ariaLabel: PropTypes.string,
   previousPath: PropTypes.string,
-  isFixedHeight: PropTypes.bool,
-  t: PropTypes.func.isRequired
+  isFixedHeight: PropTypes.bool
 };
 
 Overlay.defaultProps = {

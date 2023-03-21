@@ -3,6 +3,7 @@ import React from 'react';
 import { Form, Field } from 'react-final-form';
 import { useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router';
 import { validateNewPassword } from '../../../utils/reduxFormUtils';
 import { updatePassword } from '../actions';
 import Button from '../../../common/Button';
@@ -11,8 +12,10 @@ function NewPasswordForm(props) {
   const { resetPasswordToken } = props;
   const { t } = useTranslation();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   function onSubmit(formProps) {
+    navigate('/');
     return dispatch(updatePassword(formProps, resetPasswordToken));
   }
 

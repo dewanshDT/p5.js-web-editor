@@ -1,4 +1,3 @@
-import { browserHistory } from 'react-router';
 import apiClient from '../../../utils/apiClient';
 import * as ActionTypes from '../../../constants';
 import { startLoader, stopLoader } from './loader';
@@ -37,7 +36,7 @@ export function getCollections(username) {
   };
 }
 
-export function createCollection(collection) {
+export function createCollection(collection, navigate) {
   return (dispatch) => {
     dispatch(startLoader());
     const url = '/collections';
@@ -56,7 +55,7 @@ export function createCollection(collection) {
         const pathname = `/${newCollection.owner.username}/collections/${newCollection.id}`;
         const location = { pathname, state: { skipSavingPath: true } };
 
-        browserHistory.push(location);
+        navigate(location);
       })
       .catch((error) => {
         const { response } = error;

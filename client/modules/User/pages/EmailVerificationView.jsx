@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { browserHistory } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
 import get from 'lodash/get';
 import { Helmet } from 'react-helmet';
@@ -22,6 +22,8 @@ class EmailVerificationView extends React.Component {
     }
   }
 
+  navigate = useNavigate();
+
   verificationToken = () => get(this.props, 'location.query.t', null);
 
   render() {
@@ -34,7 +36,7 @@ class EmailVerificationView extends React.Component {
       status = <p>{this.props.t('EmailVerificationView.Checking')}</p>;
     } else if (emailVerificationTokenState === 'verified') {
       status = <p>{this.props.t('EmailVerificationView.Verified')}</p>;
-      setTimeout(() => browserHistory.push('/'), 1000);
+      setTimeout(() => this.navigate('/'), 1000);
     } else if (emailVerificationTokenState === 'invalid') {
       status = <p>{this.props.t('EmailVerificationView.InvalidState')}</p>;
     }

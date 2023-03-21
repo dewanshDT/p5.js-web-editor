@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
-import { browserHistory } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
 
 import Button from '../../../common/Button';
@@ -42,9 +42,10 @@ class DashboardView extends React.Component {
   componentDidMount() {
     document.body.className = this.props.theme;
   }
+  navigate = useNavigate();
 
   closeAccountPage() {
-    browserHistory.push(this.props.previousPath);
+    this.navigate(this.props.previousPath);
   }
 
   createNewSketch() {
@@ -52,7 +53,7 @@ class DashboardView extends React.Component {
   }
 
   gotoHomePage() {
-    browserHistory.push('/');
+    this.navigate('/');
   }
 
   selectedTabKey() {

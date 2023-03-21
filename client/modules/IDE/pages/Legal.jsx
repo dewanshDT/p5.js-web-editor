@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-import { browserHistory } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import PrivacyPolicy from './PrivacyPolicy';
@@ -32,6 +32,7 @@ const TabTitle = styled.p`
 function Legal({ location }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const { t } = useTranslation();
+  const navigate = useNavigate();
   useEffect(() => {
     if (location.pathname === '/privacy-policy') {
       setSelectedIndex(0);
@@ -46,13 +47,13 @@ function Legal({ location }) {
     if (index === lastIndex) return;
     if (index === 0) {
       setSelectedIndex(0);
-      browserHistory.push('/privacy-policy');
+      navigate('/privacy-policy');
     } else if (index === 1) {
       setSelectedIndex(1);
-      browserHistory.push('/terms-of-use');
+      navigate('/terms-of-use');
     } else if (index === 2) {
       setSelectedIndex(2);
-      browserHistory.push('/code-of-conduct');
+      navigate('/code-of-conduct');
     }
   }
 

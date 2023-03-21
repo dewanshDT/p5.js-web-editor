@@ -1,14 +1,15 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { browserHistory } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 
 const RedirectToUser = ({ username, url = '/:username/sketches' }) => {
+  const navigate = useNavigate();
   React.useEffect(() => {
     if (username == null) {
       return;
     }
 
-    browserHistory.replace(url.replace(':username', username));
+    navigate(url.replace(':username', username));
   }, [username]);
 
   return null;

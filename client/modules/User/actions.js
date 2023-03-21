@@ -1,4 +1,3 @@
-import { browserHistory } from 'react-router';
 import { FORM_ERROR } from 'final-form';
 import * as ActionTypes from '../../constants';
 import apiClient from '../../utils/apiClient';
@@ -42,7 +41,7 @@ export function setPreferences(preferences) {
   };
 }
 
-export function validateAndLoginUser(formProps) {
+export function validateAndLoginUser(formProps, navigate) {
   return (dispatch, getState) => {
     const state = getState();
     const { previousPath } = state.ide;
@@ -57,7 +56,7 @@ export function validateAndLoginUser(formProps) {
             })
           );
           dispatch(justOpenedProject());
-          browserHistory.push(previousPath);
+          navigate(previousPath);
           resolve();
         })
         .catch((error) =>
@@ -69,7 +68,7 @@ export function validateAndLoginUser(formProps) {
   };
 }
 
-export function validateAndSignUpUser(formValues) {
+export function validateAndSignUpUser(formValues, navigate) {
   return (dispatch, getState) => {
     const state = getState();
     const { previousPath } = state.ide;
@@ -78,7 +77,7 @@ export function validateAndSignUpUser(formValues) {
         .then((response) => {
           dispatch(authenticateUser(response.data));
           dispatch(justOpenedProject());
-          browserHistory.push(previousPath);
+          navigate(previousPath);
           resolve();
         })
         .catch((error) => {
@@ -131,14 +130,14 @@ export function validateSession() {
   };
 }
 
-export function resetProject(dispatch) {
+export function resetProject(dispatch, navigate) {
   dispatch({
     type: ActionTypes.RESET_PROJECT
   });
   dispatch({
     type: ActionTypes.CLEAR_CONSOLE
   });
-  browserHistory.push('/');
+  navigate('/');
 }
 
 export function logoutUser() {
@@ -250,7 +249,6 @@ export function updatePassword(formValues, token) {
         .post(`/reset-password/${token}`, formValues)
         .then((response) => {
           dispatch(authenticateUser(response.data));
-          browserHistory.push('/');
           resolve();
         })
         .catch((error) => {

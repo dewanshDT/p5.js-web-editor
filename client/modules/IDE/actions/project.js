@@ -1,4 +1,3 @@
-import { browserHistory } from 'react-router';
 import objectID from 'bson-objectid';
 import each from 'async/each';
 import isEqual from 'lodash/isEqual';
@@ -134,7 +133,8 @@ function getSynchedProject(currentState, responseProject) {
 export function saveProject(
   selectedFile = null,
   autosave = false,
-  mobile = false
+  mobile = false,
+  navigate
 ) {
   return (dispatch, getState) => {
     const state = getState();
@@ -214,7 +214,7 @@ export function saveProject(
 
         dispatch(setNewProject(synchedProject));
         dispatch(setUnsavedChanges(false));
-        browserHistory.push(
+        navigate(
           `/${response.data.user.username}/sketches/${response.data.id}`
         );
 
@@ -270,9 +270,6 @@ export function resetProject() {
 }
 
 export function newProject() {
-  setTimeout(() => {
-    browserHistory.push('/');
-  }, 0);
   return resetProject();
 }
 
@@ -289,7 +286,7 @@ function generateNewIdsForChildren(file, files) {
   file.children = newChildren; // eslint-disable-line
 }
 
-export function cloneProject(project) {
+export function cloneProject(project, navigate) {
   return (dispatch, getState) => {
     dispatch(setUnsavedChanges(false));
     const state = getState();
@@ -334,7 +331,7 @@ export function cloneProject(project) {
         apiClient
           .post('/projects', formParams)
           .then((response) => {
-            browserHistory.push(
+            navigate(
               `/${response.data.user.username}/sketches/${response.data.id}`
             );
             dispatch(setNewProject(response.data));

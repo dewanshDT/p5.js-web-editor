@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 const ErrorModal = ({ type, service, closeModal }) => {
@@ -53,7 +53,8 @@ const ErrorModal = ({ type, service, closeModal }) => {
 
   return (
     <div className="error-modal__content">
-      {(() => { // eslint-disable-line
+      {(() => {
+        // eslint-disable-line
         if (type === 'forceAuthentication') {
           return forceAuthentication();
         } else if (type === 'staleSession') {
@@ -63,6 +64,7 @@ const ErrorModal = ({ type, service, closeModal }) => {
         } else if (type === 'oauthError') {
           return oauthError();
         }
+        return <></>;
       })()}
     </div>
   );

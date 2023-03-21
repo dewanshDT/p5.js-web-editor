@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router';
-import { Link } from 'react-router';
+import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import classNames from 'classnames';
 import { withTranslation } from 'react-i18next';
 import { languageKeyToLabel } from '../i18n';
@@ -110,11 +110,19 @@ class Nav extends React.PureComponent {
       this.props.newProject();
     }
     this.setDropdown('none');
+    setTimeout(() => {
+      this.navigate('/');
+    }, 0);
   }
+
+  navigate = useNavigate();
 
   handleSave() {
     if (this.props.user.authenticated) {
-      this.props.saveProject(this.props.cmController.getContent());
+      this.props.saveProject(
+        this.props.cmController.getContent(),
+        this.navigate
+      );
     } else {
       this.props.showErrorModal('forceAuthentication');
     }
@@ -1017,6 +1025,6 @@ const mapDispatchToProps = {
 };
 
 export default withTranslation()(
-  withRouter(connect(mapStateToProps, mapDispatchToProps)(Nav))
+  connect(mapStateToProps, mapDispatchToProps)(Nav)
 );
 export { Nav as NavComponent };

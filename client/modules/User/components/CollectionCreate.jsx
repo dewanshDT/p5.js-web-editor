@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { useNavigate } from 'react-router';
 import { Helmet } from 'react-helmet';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
@@ -27,6 +28,7 @@ class CollectionCreate extends React.Component {
   getTitle() {
     return this.props.t('CollectionCreate.Title');
   }
+  navigate = useNavigate();
 
   handleTextChange = (field) => (evt) => {
     this.setState({
@@ -40,7 +42,7 @@ class CollectionCreate extends React.Component {
   handleCreateCollection = (event) => {
     event.preventDefault();
 
-    this.props.createCollection(this.state.collection);
+    this.props.createCollection(this.state.collection, this.navigate);
   };
 
   render() {

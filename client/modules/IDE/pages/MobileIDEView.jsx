@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
@@ -502,6 +501,4 @@ const mapDispatchToProps = (dispatch) =>
     dispatch
   );
 
-export default withRouter(
-  connect(mapStateToProps, mapDispatchToProps)(MobileIDEView)
-);
+export default connect(mapStateToProps, mapDispatchToProps)(MobileIDEView);

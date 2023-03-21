@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { connect, useSelector } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import { Helmet } from 'react-helmet';
 import { useTranslation, withTranslation } from 'react-i18next';
-import { withRouter, browserHistory } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { parse } from 'query-string';
 import { createApiKey, removeApiKey } from '../actions';
 import AccountForm from '../components/AccountForm';
@@ -45,76 +45,75 @@ function SocialLoginPanel() {
   );
 }
 
-class AccountView extends React.Component {
-  componentDidMount() {
-    document.body.className = this.props.theme;
-  }
+const AccountView = (props) => {
+  const navigate = useNavigate();
+  useEffect(() => {
+    document.body.className = props.theme;
+  });
 
-  render() {
-    const queryParams = parse(this.props.location.search);
-    const showError = !!queryParams.error;
-    const errorType = queryParams.error;
-    const accessTokensUIEnabled = window.process.env.UI_ACCESS_TOKEN_ENABLED;
+  const queryParams = parse(props.location.search);
+  const showError = !!queryParams.error;
+  const errorType = queryParams.error;
+  const accessTokensUIEnabled = window.process.env.UI_ACCESS_TOKEN_ENABLED;
 
-    return (
-      <div className="account-settings__container">
-        <Helmet>
-          <title>{this.props.t('AccountView.Title')}</title>
-        </Helmet>
-        <Toast />
+  return (
+    <div className="account-settings__container">
+      <Helmet>
+        <title>{props.t('AccountView.Title')}</title>
+      </Helmet>
+      <Toast />
 
-        <Nav layout="dashboard" />
+      <Nav layout="dashboard" />
 
-        {showError && (
-          <Overlay
-            title={this.props.t('ErrorModal.LinkTitle')}
-            ariaLabel={this.props.t('ErrorModal.LinkTitle')}
-            closeOverlay={() => {
-              browserHistory.push(this.props.location.pathname);
-            }}
-          >
-            <ErrorModal type="oauthError" service={errorType} />
-          </Overlay>
-        )}
+      {showError && (
+        <Overlay
+          title={props.t('ErrorModal.LinkTitle')}
+          ariaLabel={props.t('ErrorModal.LinkTitle')}
+          closeOverlay={() => {
+            navigate(props.location.pathname);
+          }}
+        >
+          <ErrorModal type="oauthError" service={errorType} />
+        </Overlay>
+      )}
 
-        <main className="account-settings">
-          <header className="account-settings__header">
-            <h1 className="account-settings__title">
-              {this.props.t('AccountView.Settings')}
-            </h1>
-          </header>
-          {accessTokensUIEnabled && (
-            <Tabs className="account__tabs">
-              <TabList>
-                <div className="tabs__titles">
+      <main className="account-settings">
+        <header className="account-settings__header">
+          <h1 className="account-settings__title">
+            {props.t('AccountView.Settings')}
+          </h1>
+        </header>
+        {accessTokensUIEnabled && (
+          <Tabs className="account__tabs">
+            <TabList>
+              <div className="tabs__titles">
+                <Tab>
+                  <h4 className="tabs__title">
+                    {props.t('AccountView.AccountTab')}
+                  </h4>
+                </Tab>
+                {accessTokensUIEnabled && (
                   <Tab>
                     <h4 className="tabs__title">
-                      {this.props.t('AccountView.AccountTab')}
+                      {props.t('AccountView.AccessTokensTab')}
                     </h4>
                   </Tab>
-                  {accessTokensUIEnabled && (
-                    <Tab>
-                      <h4 className="tabs__title">
-                        {this.props.t('AccountView.AccessTokensTab')}
-                      </h4>
-                    </Tab>
-                  )}
-                </div>
-              </TabList>
-              <TabPanel>
-                <SocialLoginPanel />
-              </TabPanel>
-              <TabPanel>
-                <APIKeyForm {...this.props} />
-              </TabPanel>
-            </Tabs>
-          )}
-          {!accessTokensUIEnabled && <SocialLoginPanel />}
-        </main>
-      </div>
-    );
-  }
-}
+                )}
+              </div>
+            </TabList>
+            <TabPanel>
+              <SocialLoginPanel />
+            </TabPanel>
+            <TabPanel>
+              <APIKeyForm {...props} />
+            </TabPanel>
+          </Tabs>
+        )}
+        {!accessTokensUIEnabled && <SocialLoginPanel />}
+      </main>
+    </div>
+  );
+};
 
 function mapStateToProps(state) {
   return {
@@ -147,5 +146,5 @@ AccountView.propTypes = {
 };
 
 export default withTranslation()(
-  withRouter(connect(mapStateToProps, mapDispatchToProps)(AccountView))
+  connect(mapStateToProps, mapDispatchToProps)(AccountView)
 );

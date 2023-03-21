@@ -1,4 +1,4 @@
-import { Route, IndexRoute } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import React from 'react';
 
 import App from './modules/App/App';
@@ -41,15 +41,16 @@ const onRouteChange = (store) => {
   store.dispatch(stopSketch());
 };
 
-const routes = (store) => (
-  <Route
+const AppRoutes = (store) => (
+  <Routes
     path="/"
     component={App}
     onChange={() => {
       onRouteChange(store);
     }}
   >
-    <IndexRoute
+    <Route
+      path="/"
       onEnter={checkAuth(store)}
       component={mobileFirst(MobileIDEView, IDEView)}
     />
@@ -123,7 +124,7 @@ const routes = (store) => (
     <Route path="/privacy-policy" component={Legal} />
     <Route path="/terms-of-use" component={Legal} />
     <Route path="/code-of-conduct" component={Legal} />
-  </Route>
+  </Routes>
 );
 
-export default routes;
+export default AppRoutes;

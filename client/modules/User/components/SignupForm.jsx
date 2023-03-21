@@ -2,6 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, Field } from 'react-final-form';
 import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router';
 import { validateSignup } from '../../../utils/reduxFormUtils';
 import { validateAndSignUpUser } from '../actions';
 import Button from '../../../common/Button';
@@ -33,10 +34,11 @@ function validateEmail(email) {
 
 function SignupForm() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const dispatch = useDispatch();
   function onSubmit(formProps) {
-    return dispatch(validateAndSignUpUser(formProps));
+    return dispatch(validateAndSignUpUser(formProps, navigate));
   }
 
   return (

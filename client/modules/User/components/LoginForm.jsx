@@ -2,16 +2,18 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, Field } from 'react-final-form';
 import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router';
 import Button from '../../../common/Button';
 import { validateLogin } from '../../../utils/reduxFormUtils';
 import { validateAndLoginUser } from '../actions';
 
 function LoginForm() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const dispatch = useDispatch();
   function onSubmit(formProps) {
-    return dispatch(validateAndLoginUser(formProps));
+    return dispatch(validateAndLoginUser(formProps, navigate));
   }
 
   return (
