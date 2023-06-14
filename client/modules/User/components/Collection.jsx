@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { useState, useRef, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { connect } from 'react-redux';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import { bindActionCreators } from 'redux';
 import { useTranslation, withTranslation } from 'react-i18next';
 import classNames from 'classnames';
@@ -12,7 +12,6 @@ import { DropdownArrowIcon } from '../../../common/icons';
 import * as ProjectActions from '../../IDE/actions/project';
 import * as ProjectsActions from '../../IDE/actions/projects';
 import * as CollectionsActions from '../../IDE/actions/collections';
-import * as ToastActions from '../../IDE/actions/toast';
 import * as SortingActions from '../../IDE/actions/sorting';
 import * as IdeActions from '../../IDE/actions/ide';
 import { getCollection } from '../../IDE/selectors/collections';
@@ -537,13 +536,7 @@ function mapStateToProps(state, ownProps) {
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators(
-    Object.assign(
-      {},
-      CollectionsActions,
-      ProjectsActions,
-      ToastActions,
-      SortingActions
-    ),
+    Object.assign({}, CollectionsActions, ProjectsActions, SortingActions),
     dispatch
   );
 }

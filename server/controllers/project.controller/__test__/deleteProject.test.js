@@ -8,7 +8,7 @@ import Project, {
   createInstanceMock
 } from '../../../models/project';
 import User from '../../../models/user';
-import deleteProject from '../../project.controller/deleteProject';
+import deleteProject from '../deleteProject';
 import { deleteObjectsFromS3 } from '../../aws.controller';
 
 jest.mock('../../../models/project');

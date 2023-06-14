@@ -1,11 +1,11 @@
-import { browserHistory } from 'react-router';
 import objectID from 'bson-objectid';
 import each from 'async/each';
 import isEqual from 'lodash/isEqual';
+import { navigate } from '../../../router';
 import apiClient from '../../../utils/apiClient';
 import getConfig from '../../../utils/getConfig';
 import * as ActionTypes from '../../../constants';
-import { showToast, setToastText } from './toast';
+import { showToast } from './toast';
 import {
   setUnsavedChanges,
   justOpenedProject,
@@ -175,24 +175,21 @@ export function saveProject(
           dispatch(projectSaveSuccess());
           if (!autosave) {
             if (state.ide.justOpenedProject && state.preferences.autosave) {
-              dispatch(showToast(5500));
-              dispatch(setToastText('Toast.SketchSaved'));
+              dispatch(showToast('Toast.SketchSaved', 5500));
               setTimeout(
-                () => dispatch(setToastText('Toast.AutosaveEnabled')),
+                () => dispatch(showToast('Toast.AutosaveEnabled', 5500)),
                 1500
               );
               dispatch(resetJustOpenedProject());
             } else {
-              dispatch(showToast(1500));
-              dispatch(setToastText('Toast.SketchSaved'));
+              dispatch(showToast('Toast.SketchSaved'));
             }
           }
         })
         .catch((error) => {
           const { response } = error;
           dispatch(endSavingProject());
-          dispatch(setToastText('Toast.SketchFailedSave'));
-          dispatch(showToast(1500));
+          dispatch(showToast('Toast.SketchFailedSave'));
           if (response.status === 403) {
             dispatch(showErrorModal('staleSession'));
           } else if (response.status === 409) {
@@ -214,7 +211,7 @@ export function saveProject(
 
         dispatch(setNewProject(synchedProject));
         dispatch(setUnsavedChanges(false));
-        browserHistory.push(
+        navigate(
           `/${response.data.user.username}/sketches/${response.data.id}`
         );
 
@@ -225,24 +222,21 @@ export function saveProject(
         dispatch(projectSaveSuccess());
         if (!autosave) {
           if (state.preferences.autosave) {
-            dispatch(showToast(5500));
-            dispatch(setToastText('Toast.SketchSaved'));
+            dispatch(showToast('Toast.SketchSaved', 5500));
             setTimeout(
-              () => dispatch(setToastText('Toast.AutosaveEnabled')),
+              () => dispatch(showToast('Toast.AutosaveEnabled')),
               1500
             );
             dispatch(resetJustOpenedProject());
           } else {
-            dispatch(showToast(1500));
-            dispatch(setToastText('Toast.SketchSaved'));
+            dispatch(showToast('Toast.SketchSaved'));
           }
         }
       })
       .catch((error) => {
         const { response } = error;
         dispatch(endSavingProject());
-        dispatch(setToastText('Toast.SketchFailedSave'));
-        dispatch(showToast(1500));
+        dispatch(showToast('Toast.SketchFailedSave'));
         if (response.status === 403) {
           dispatch(showErrorModal('staleSession'));
         } else {
@@ -271,7 +265,7 @@ export function resetProject() {
 
 export function newProject() {
   setTimeout(() => {
-    browserHistory.push('/');
+    navigate('/');
   }, 0);
   return resetProject();
 }
@@ -334,7 +328,7 @@ export function cloneProject(project) {
         apiClient
           .post('/projects', formParams)
           .then((response) => {
-            browserHistory.push(
+            navigate(
               `/${response.data.user.username}/sketches/${response.data.id}`
             );
             dispatch(setNewProject(response.data));

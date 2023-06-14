@@ -1,9 +1,10 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { browserHistory } from 'react-router';
 import { withTranslation } from 'react-i18next';
 
 import ExitIcon from '../../../images/exit.svg';
+import { DocumentKeyDown } from '../../IDE/hooks/useKeyDownHandlers';
+import { withRouter } from '../../../utils/router-compatibilty';
 
 class Overlay extends React.Component {
   constructor(props) {
@@ -11,12 +12,10 @@ class Overlay extends React.Component {
     this.close = this.close.bind(this);
     this.handleClick = this.handleClick.bind(this);
     this.handleClickOutside = this.handleClickOutside.bind(this);
-    this.keyPressHandle = this.keyPressHandle.bind(this);
   }
 
   componentWillMount() {
     document.addEventListener('mousedown', this.handleClick, false);
-    document.addEventListener('keydown', this.keyPressHandle);
   }
 
   componentDidMount() {
@@ -25,7 +24,6 @@ class Overlay extends React.Component {
 
   componentWillUnmount() {
     document.removeEventListener('mousedown', this.handleClick, false);
-    document.removeEventListener('keydown', this.keyPressHandle);
   }
 
   handleClick(e) {
@@ -40,14 +38,6 @@ class Overlay extends React.Component {
     this.close();
   }
 
-  keyPressHandle(e) {
-    // escape key code = 27.
-    // So here we are checking if the key pressed was Escape key.
-    if (e.keyCode === 27) {
-      this.close();
-    }
-  }
-
   close() {
     // Only close if it is the last (and therefore the topmost overlay)
     const overlays = document.getElementsByClassName('overlay');
@@ -55,7 +45,7 @@ class Overlay extends React.Component {
       return;
 
     if (!this.props.closeOverlay) {
-      browserHistory.push(this.props.previousPath);
+      this.props.navigate(this.props.previousPath);
     } else {
       this.props.closeOverlay();
     }
@@ -90,6 +80,7 @@ class Overlay extends React.Component {
               </div>
             </header>
             {children}
+            <DocumentKeyDown handlers={{ escape: () => this.close() }} />
           </section>
         </div>
       </div>
@@ -105,7 +96,8 @@ Overlay.propTypes = {
   ariaLabel: PropTypes.string,
   previousPath: PropTypes.string,
   isFixedHeight: PropTypes.bool,
-  t: PropTypes.func.isRequired
+  t: PropTypes.func.isRequired,
+  navigate: PropTypes.func.isRequired
 };
 
 Overlay.defaultProps = {
@@ -118,4 +110,4 @@ Overlay.defaultProps = {
   isFixedHeight: false
 };
 
-export default withTranslation()(Overlay);
+export default withRouter(withTranslation()(Overlay));

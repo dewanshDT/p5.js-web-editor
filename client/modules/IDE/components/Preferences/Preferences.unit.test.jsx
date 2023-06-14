@@ -1,63 +1,22 @@
 import React from 'react';
 import { act } from 'react-dom/test-utils';
-import { fireEvent, render, screen } from '../../../../test-utils';
+import { fireEvent, reduxRender, screen } from '../../../../test-utils';
 import Preferences from './index';
-
-/* props to pass in:
- * - this.props.fontSize : number
- * - this.props.autosave : bool
- * - this.props.autocloseBracketsQuotes : bool
- * - this.props.autocompleteHinter : bool
- * - this.props.linewrap : bool
- * - this.props.lineNumbers : bool
- * - this.props.theme : string
- * - this.props.lintWarning : bool
- * - this.props.textOutput : bool
- * - this.props.gridOutput : bool
- * - this.props.soundOutput : bool
- * - t from internationalization
- *
- * - this.props.setFontSize(fontsize : number)
- * - this.props.setAutosave(value : bool)
- * - this.props.setAutocloseBracketsQuotes(value: bool)
- * - this.props.setLinewrap(value : bool)
- * - this.props.setLineNumbers(value : bool)
- * - this.props.setTheme(color : string) -> can be {"light", "dark", "contrast"}
- * - this.props.setLintWarning(value : bool)
- * - this.props.setTextOutput(value : bool)
- * - this.props.setGridOutput(value : bool)
- * - this.props.setSoundOutput(value : bool)
- * -
- */
+import * as PreferencesActions from '../../actions/preferences';
 
 describe('<Preferences />', () => {
-  let props = {
-    t: jest.fn(),
-    fontSize: 12,
-    autosave: false,
-    autocloseBracketsQuotes: false,
-    autocompleteHinter: false,
-    linewrap: false,
-    lineNumbers: false,
-    theme: 'contrast',
-    lintWarning: false,
-    textOutput: false,
-    gridOutput: false,
-    soundOutput: false,
-    setFontSize: jest.fn(),
-    setAutosave: jest.fn(),
-    setAutocloseBracketsQuotes: jest.fn(),
-    setAutocompleteHinter: jest.fn(),
-    setLinewrap: jest.fn(),
-    setLineNumbers: jest.fn(),
-    setTheme: jest.fn(),
-    setLintWarning: jest.fn(),
-    setTextOutput: jest.fn(),
-    setGridOutput: jest.fn(),
-    setSoundOutput: jest.fn()
-  };
+  // For backwards compatibility, spy on each action creator to see when it was dispatched.
+  const props = Object.fromEntries(
+    Object.keys(PreferencesActions).map((name) => {
+      const spied = jest.spyOn(PreferencesActions, name);
+      return [name, spied];
+    })
+  );
 
-  const subject = () => render(<Preferences {...props} />);
+  const subject = (initialPreferences = {}) =>
+    reduxRender(<Preferences />, {
+      initialState: { preferences: initialPreferences }
+    });
 
   afterEach(() => {
     jest.clearAllMocks();
@@ -81,9 +40,7 @@ describe('<Preferences />', () => {
 
     it('increase font size by 2 when clicking plus button', () => {
       // render the component with font size set to 12
-      act(() => {
-        subject();
-      });
+      const { store } = subject({ fontSize: 12 });
 
       // get ahold of the button for increasing text size
       const fontPlusButton = screen.getByRole('button', {
@@ -95,13 +52,16 @@ describe('<Preferences />', () => {
         fireEvent.click(fontPlusButton);
       });
 
-      // expect that setFontSize has been called once with the argument 14
-      expect(props.setFontSize).toHaveBeenCalledTimes(1);
-      expect(props.setFontSize.mock.calls[0][0]).toBe(14);
+      const fontSizeInput = screen.getByLabelText('Font Size');
+
+      // expect that the font size text input says "14"
+      expect(fontSizeInput.value).toBe('14');
+      // expect that the stored value is a number 14
+      expect(store.getState().preferences.fontSize).toBe(14);
     });
 
     it('font size decrease button says decrease', () => {
-      // render the component with font size set to 12
+      // render the component
       act(() => {
         subject();
       });
@@ -117,9 +77,7 @@ describe('<Preferences />', () => {
 
     it('decrease font size by 2 when clicking minus button', () => {
       // render the component with font size set to 12
-      act(() => {
-        subject();
-      });
+      const { store } = subject({ fontSize: 12 });
 
       // get ahold of the button for decreasing text size
       const fontMinusButton = screen.getByRole('button', {
@@ -131,19 +89,20 @@ describe('<Preferences />', () => {
         fireEvent.click(fontMinusButton);
       });
 
-      // expect that setFontSize would have been called once with argument 10
-      expect(props.setFontSize).toHaveBeenCalledTimes(1);
-      expect(props.setFontSize.mock.calls[0][0]).toBe(10);
+      const fontSizeInput = screen.getByLabelText('Font Size');
+
+      // expect that the font size text input says "10"
+      expect(fontSizeInput.value).toBe('10');
+      // expect that the stored value is a number 10
+      expect(store.getState().preferences.fontSize).toBe(10);
     });
 
     it('font text field changes on manual text input', () => {
       // render the component with font size set to 12
-      act(() => {
-        subject();
-      });
+      const { store } = subject({ fontSize: 12 });
 
       // get ahold of the text field
-      const input = screen.getByRole('textbox', { name: /font size/i });
+      const input = screen.getByLabelText('Font Size');
 
       // change input to 24
       act(() => {
@@ -159,19 +118,16 @@ describe('<Preferences />', () => {
         );
       });
 
-      // expect that setFontSize was called once with 24
-      expect(props.setFontSize).toHaveBeenCalledTimes(1);
-      expect(props.setFontSize.mock.calls[0][0]).toBe(24);
+      // expect that the font size is now 24
+      expect(store.getState().preferences.fontSize).toBe(24);
     });
 
     it('font size CAN NOT go over 36', () => {
       // render the component
-      act(() => {
-        subject();
-      });
+      const { store } = subject();
 
       // get ahold of the text field
-      const input = screen.getByRole('textbox', { name: /font size/i });
+      const input = screen.getByLabelText('Font Size');
 
       act(() => {
         fireEvent.change(input, { target: { value: '100' } });
@@ -187,18 +143,15 @@ describe('<Preferences />', () => {
         );
       });
 
-      expect(props.setFontSize).toHaveBeenCalledTimes(1);
-      expect(props.setFontSize.mock.calls[0][0]).toBe(36);
+      expect(store.getState().preferences.fontSize).toBe(36);
     });
 
     it('font size CAN NOT go under 8', () => {
       // render the component
-      act(() => {
-        subject();
-      });
+      const { store } = subject();
 
       // get ahold of the text field
-      const input = screen.getByRole('textbox', { name: /font size/i });
+      const input = screen.getByLabelText('Font Size');
 
       act(() => {
         fireEvent.change(input, { target: { value: '0' } });
@@ -214,20 +167,17 @@ describe('<Preferences />', () => {
         );
       });
 
-      expect(props.setFontSize).toHaveBeenCalledTimes(1);
-      expect(props.setFontSize.mock.calls[0][0]).toBe(8);
+      expect(store.getState().preferences.fontSize).toBe(8);
     });
 
     // this case is a bit synthetic because we wouldn't be able to type
     // h and then i, but it tests the same idea
     it('font size input field does NOT take non-integers', () => {
       // render the component
-      act(() => {
-        subject();
-      });
+      const { store } = subject({ fontSize: 12 });
 
       // get ahold of the text field
-      const input = screen.getByRole('textbox', { name: /font size/i });
+      const input = screen.getByLabelText('Font Size');
 
       act(() => {
         fireEvent.change(input, { target: { value: 'hi' } });
@@ -246,18 +196,15 @@ describe('<Preferences />', () => {
       });
 
       // it still sets the font size but it's still 12
-      expect(props.setFontSize).toHaveBeenCalledTimes(1);
-      expect(props.setFontSize.mock.calls[0][0]).toBe(12);
+      expect(store.getState().preferences.fontSize).toBe(12);
     });
 
     it('font size input field does NOT take "-"', () => {
       // render the component
-      act(() => {
-        subject();
-      });
+      const { store } = subject({ fontSize: 12 });
 
       // get ahold of the text field
-      const input = screen.getByRole('textbox', { name: /font size/i });
+      const input = screen.getByLabelText('Font Size');
 
       act(() => {
         fireEvent.change(input, { target: { value: '-' } });
@@ -273,8 +220,7 @@ describe('<Preferences />', () => {
         );
       });
 
-      expect(props.setFontSize).toHaveBeenCalledTimes(1);
-      expect(props.setFontSize.mock.calls[0][0]).toBe(12);
+      expect(store.getState().preferences.fontSize).toBe(12);
     });
   });
 
@@ -311,13 +257,9 @@ describe('<Preferences />', () => {
 
   describe('testing theme switching', () => {
     describe('dark mode', () => {
-      beforeAll(() => {
-        props.theme = 'dark';
-      });
-
       it('switch to light', () => {
         act(() => {
-          subject();
+          subject({ theme: 'dark' });
         });
 
         const themeRadioCurrent = screen.getByRole('radio', {
@@ -338,13 +280,9 @@ describe('<Preferences />', () => {
     });
 
     describe('light mode', () => {
-      beforeAll(() => {
-        props.theme = 'light';
-      });
-
       it('switch to dark', () => {
         act(() => {
-          subject();
+          subject({ theme: 'light' });
         });
 
         const themeRadioCurrent = screen.getByRole('radio', {
@@ -365,7 +303,7 @@ describe('<Preferences />', () => {
 
       it('switch to contrast', () => {
         act(() => {
-          subject();
+          subject({ theme: 'light' });
         });
         const themeRadioCurrent = screen.getByRole('radio', {
           name: /light theme on/i
@@ -388,7 +326,7 @@ describe('<Preferences />', () => {
   describe('testing toggle UI elements on starting tab', () => {
     it('autosave toggle, starting at false', () => {
       act(() => {
-        subject();
+        subject({ autosave: false });
       });
 
       // get ahold of the radio buttons for toggling autosave
@@ -410,7 +348,7 @@ describe('<Preferences />', () => {
     it('autocloseBracketsQuotes toggle, starting at false', () => {
       // render the component with autocloseBracketsQuotes prop set to false
       act(() => {
-        subject();
+        subject({ autocloseBracketsQuotes: false });
       });
 
       // get ahold of the radio buttons for toggling autocloseBracketsQuotes
@@ -452,14 +390,10 @@ describe('<Preferences />', () => {
     });
 
     describe('start autosave value at true', () => {
-      beforeAll(() => {
-        props.autosave = true;
-      });
-
       it('autosave toggle, starting at true', () => {
         // render the component with autosave prop set to true
         act(() => {
-          subject();
+          subject({ autosave: true });
         });
 
         // get ahold of the radio buttons for toggling autosave
@@ -480,13 +414,9 @@ describe('<Preferences />', () => {
     });
 
     describe('start autoclose brackets value at true', () => {
-      beforeAll(() => {
-        props.autocloseBracketsQuotes = true;
-      });
-
       it('autocloseBracketsQuotes toggle, starting at true', () => {
         act(() => {
-          subject();
+          subject({ autocloseBracketsQuotes: true });
         });
 
         // get ahold of the radio buttons for toggling autocloseBracketsQuotes
@@ -535,14 +465,10 @@ describe('<Preferences />', () => {
     });
 
     describe('start linewrap at false', () => {
-      beforeAll(() => {
-        props.linewrap = false;
-      });
-
       it('linewrap toggle, starting at false', () => {
         // render the component with linewrap prop set to false
         act(() => {
-          subject();
+          subject({ linewrap: false });
         });
 
         // get ahold of the radio buttons for toggling linewrap
@@ -563,14 +489,10 @@ describe('<Preferences />', () => {
     });
 
     describe('start linewrap at true', () => {
-      beforeAll(() => {
-        props.linewrap = true;
-      });
-
       it('linewrap toggle, starting at true', () => {
         // render the component with linewrap prop set to false
         act(() => {
-          subject();
+          subject({ linewrap: true });
         });
 
         // get ahold of the radio buttons for toggling linewrap
@@ -626,14 +548,10 @@ describe('<Preferences />', () => {
 
   describe('testing toggle UI elements on accessibility tab', () => {
     describe('starting linenumbers at false', () => {
-      beforeAll(() => {
-        props.lineNumbers = false;
-      });
-
       it('lineNumbers toggle, starting at false', () => {
         // render the component with lineNumbers prop set to false
         act(() => {
-          subject();
+          subject({ lineNumbers: false });
         });
 
         // switch tabs
@@ -661,14 +579,10 @@ describe('<Preferences />', () => {
     });
 
     describe('starting linenumbers at true', () => {
-      beforeAll(() => {
-        props.lineNumbers = true;
-      });
-
       it('lineNumbers toggle, starting at true', () => {
         // render the component with lineNumbers prop set to false
         act(() => {
-          subject();
+          subject({ lineNumbers: true });
         });
 
         // switch tabs
@@ -696,14 +610,10 @@ describe('<Preferences />', () => {
     });
 
     describe('starting lintWarning at false', () => {
-      beforeAll(() => {
-        props.lintWarning = false;
-      });
-
       it('lintWarning toggle, starting at false', () => {
         // render the component with lintWarning prop set to false
         act(() => {
-          subject();
+          subject({ lintWarning: false });
         });
 
         // switch tabs
@@ -731,14 +641,10 @@ describe('<Preferences />', () => {
     });
 
     describe('starting lintWarning at true', () => {
-      beforeAll(() => {
-        props.lintWarning = true;
-      });
-
       it('lintWarning toggle, starting at true', () => {
         // render the component with lintWarning prop set to false
         act(() => {
-          subject();
+          subject({ lintWarning: true });
         });
 
         // switch tabs
@@ -766,15 +672,12 @@ describe('<Preferences />', () => {
     });
 
     const testCheckbox = (arialabel, startState, setter) => {
-      props = {
-        ...props,
-        textOutput: startState && arialabel === 'text output on',
-        soundOutput: startState && arialabel === 'sound output on',
-        gridOutput: startState && arialabel === 'table output on'
-      };
-
       act(() => {
-        subject();
+        subject({
+          textOutput: startState && arialabel === 'text output on',
+          soundOutput: startState && arialabel === 'sound output on',
+          gridOutput: startState && arialabel === 'table output on'
+        });
       });
 
       // switch tabs
@@ -817,17 +720,12 @@ describe('<Preferences />', () => {
     });
 
     describe('multiple checkboxes can be selected', () => {
-      beforeAll(() => {
-        props = {
-          ...props,
-          textOutput: true,
-          gridOutput: true
-        };
-      });
-
       it('multiple checkboxes can be selected', () => {
         act(() => {
-          subject();
+          subject({
+            textOutput: true,
+            gridOutput: true
+          });
         });
 
         // switch tabs
@@ -850,16 +748,12 @@ describe('<Preferences />', () => {
     });
 
     describe('none of the checkboxes can be selected', () => {
-      beforeAll(() => {
-        props = {
-          ...props,
-          textOutput: false,
-          gridOutput: false
-        };
-      });
       it('none of the checkboxes can be selected', () => {
         act(() => {
-          subject();
+          subject({
+            textOutput: false,
+            gridOutput: false
+          });
         });
 
         // switch tabs
