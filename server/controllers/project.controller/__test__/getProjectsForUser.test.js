@@ -6,7 +6,7 @@ import { Request, Response } from 'jest-express';
 import { createMock } from '../../../models/user';
 import getProjectsForUser, {
   apiGetProjectsForUser
-} from '../getProjectsForUser';
+} from '../../project.controller/getProjectsForUser';
 
 jest.mock('../../../models/user');
 jest.mock('../../aws.controller');

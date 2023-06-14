@@ -1,11 +1,11 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useLocation, useNavigate } from 'react-router-dom';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import { Helmet } from 'react-helmet';
 import { useTranslation } from 'react-i18next';
+import { withRouter, browserHistory } from 'react-router';
 import { parse } from 'query-string';
-import getConfig from '../../../utils/getConfig';
 import { createApiKey, removeApiKey } from '../actions';
 import AccountForm from '../components/AccountForm';
 import SocialAuthButton from '../components/SocialAuthButton';
@@ -44,16 +44,13 @@ function SocialLoginPanel() {
   );
 }
 
-function AccountView() {
+function AccountView({ location }) {
   const { t } = useTranslation();
-
-  const navigate = useNavigate();
-  const location = useLocation();
 
   const queryParams = parse(location.search);
   const showError = !!queryParams.error;
   const errorType = queryParams.error;
-  const accessTokensUIEnabled = getConfig('UI_ACCESS_TOKEN_ENABLED');
+  const accessTokensUIEnabled = window.process.env.UI_ACCESS_TOKEN_ENABLED;
 
   const apiKeys = useSelector((state) => state.user.apiKeys);
   const dispatch = useDispatch();
@@ -72,7 +69,7 @@ function AccountView() {
           title={t('ErrorModal.LinkTitle')}
           ariaLabel={t('ErrorModal.LinkTitle')}
           closeOverlay={() => {
-            navigate(location.pathname);
+            browserHistory.push(location.pathname);
           }}
         >
           <ErrorModal type="oauthError" service={errorType} />
@@ -121,4 +118,11 @@ function AccountView() {
   );
 }
 
-export default AccountView;
+AccountView.propTypes = {
+  location: PropTypes.shape({
+    search: PropTypes.string.isRequired,
+    pathname: PropTypes.string.isRequired
+  }).isRequired
+};
+
+export default withRouter(AccountView);

@@ -3,7 +3,7 @@ import React from 'react';
 import { Helmet } from 'react-helmet';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { bindActionCreators } from 'redux';
 import classNames from 'classnames';
 import slugify from 'slugify';
@@ -11,6 +11,7 @@ import dates from '../../../utils/formatDate';
 import * as ProjectActions from '../actions/project';
 import * as ProjectsActions from '../actions/projects';
 import * as CollectionsActions from '../actions/collections';
+import * as ToastActions from '../actions/toast';
 import * as SortingActions from '../actions/sorting';
 import * as IdeActions from '../actions/ide';
 import getSortedSketches from '../selectors/projects';
@@ -294,22 +295,24 @@ class SketchListRowBase extends React.Component {
     );
 
     return (
-      <tr
-        className="sketches-table__row"
-        key={sketch.id}
-        onClick={this.handleRowClick}
-      >
-        <th scope="row">{name}</th>
-        <td>
-          {mobile && 'Created: '}
-          {formatDateCell(sketch.createdAt, mobile)}
-        </td>
-        <td>
-          {mobile && 'Updated: '}
-          {formatDateCell(sketch.updatedAt, mobile)}
-        </td>
-        {this.renderDropdown()}
-      </tr>
+      <React.Fragment>
+        <tr
+          className="sketches-table__row"
+          key={sketch.id}
+          onClick={this.handleRowClick}
+        >
+          <th scope="row">{name}</th>
+          <td>
+            {mobile && 'Created: '}
+            {formatDateCell(sketch.createdAt, mobile)}
+          </td>
+          <td>
+            {mobile && 'Updated: '}
+            {formatDateCell(sketch.updatedAt, mobile)}
+          </td>
+          {this.renderDropdown()}
+        </tr>
+      </React.Fragment>
     );
   }
 }
@@ -588,7 +591,13 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators(
-    Object.assign({}, ProjectsActions, CollectionsActions, SortingActions),
+    Object.assign(
+      {},
+      ProjectsActions,
+      CollectionsActions,
+      ToastActions,
+      SortingActions
+    ),
     dispatch
   );
 }

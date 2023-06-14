@@ -1,7 +1,7 @@
+import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import Helmet from 'react-helmet';
 import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
 import PreviewFrame from '../components/PreviewFrame';
 import PreviewNav from '../../../components/PreviewNav';
 import { getProject } from '../actions/project';
@@ -14,14 +14,13 @@ import {
 import useInterval from '../hooks/useInterval';
 import RootPage from '../../../components/RootPage';
 
-function FullView() {
-  const params = useParams();
+function FullView(props) {
   const dispatch = useDispatch();
   const project = useSelector((state) => state.project);
   const [isRendered, setIsRendered] = useState(false);
 
   useEffect(() => {
-    dispatch(getProject(params.project_id, params.username));
+    dispatch(getProject(props.params.project_id, props.params.username));
   }, []);
 
   useEffect(() => {
@@ -65,7 +64,7 @@ function FullView() {
         }}
         project={{
           name: project.name,
-          id: params.project_id
+          id: props.params.project_id
         }}
       />
       <main className="preview-frame-holder">
@@ -74,5 +73,12 @@ function FullView() {
     </RootPage>
   );
 }
+
+FullView.propTypes = {
+  params: PropTypes.shape({
+    project_id: PropTypes.string,
+    username: PropTypes.string
+  }).isRequired
+};
 
 export default FullView;

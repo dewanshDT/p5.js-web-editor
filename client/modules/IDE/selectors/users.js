@@ -1,12 +1,11 @@
-import { createSelector } from '@reduxjs/toolkit';
+import { createSelector } from 'reselect';
 import getConfig from '../../../utils/getConfig';
 
-export const getAuthenticated = (state) => state.user.authenticated;
+const getAuthenticated = (state) => state.user.authenticated;
 const getTotalSize = (state) => state.user.totalSize;
 const getAssetsTotalSize = (state) => state.assets.totalSize;
-export const getSketchOwner = (state) => state.project.owner;
+const getSketchOwner = (state) => state.project.owner;
 const getUserId = (state) => state.user.id;
-export const selectUsername = (state) => state.user.username;
 const limit = getConfig('UPLOAD_LIMIT') || 250000000;
 
 export const getCanUploadMedia = createSelector(
@@ -39,10 +38,4 @@ export const getIsUserOwner = createSelector(
     if (!sketchOwner) return false;
     return sketchOwner.id === userId;
   }
-);
-
-export const selectCanEditSketch = createSelector(
-  getSketchOwner,
-  getIsUserOwner,
-  (sketchOwner, isOwner) => !sketchOwner || isOwner
 );

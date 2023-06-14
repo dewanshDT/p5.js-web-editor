@@ -276,7 +276,6 @@ class FileNode extends React.Component {
                   className="sidebar__file-item-closed"
                   onClick={this.showFolderChildren}
                   aria-label={t('FileNode.OpenFolderARIA')}
-                  title={t('FileNode.OpenFolderARIA')}
                 >
                   <FolderRightIcon
                     className="folder-right"
@@ -288,7 +287,6 @@ class FileNode extends React.Component {
                   className="sidebar__file-item-open"
                   onClick={this.hideFolderChildren}
                   aria-label={t('FileNode.CloseFolderARIA')}
-                  title={t('FileNode.CloseFolderARIA')}
                 >
                   <FolderDownIcon
                     className="folder-down"
@@ -447,7 +445,9 @@ function mapStateToProps(state, ownProps) {
   });
 }
 
-const mapDispatchToProps = { ...FileActions, ...IDEActions };
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators(Object.assign(FileActions, IDEActions), dispatch);
+}
 
 const TranslatedFileNode = withTranslation()(FileNode);
 
@@ -456,5 +456,4 @@ const ConnectedFileNode = connect(
   mapDispatchToProps
 )(TranslatedFileNode);
 
-export { TranslatedFileNode as FileNode };
-export default ConnectedFileNode;
+export { TranslatedFileNode as FileNode, ConnectedFileNode as default };

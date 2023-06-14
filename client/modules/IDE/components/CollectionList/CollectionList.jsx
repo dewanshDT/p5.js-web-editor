@@ -9,6 +9,7 @@ import find from 'lodash/find';
 import * as ProjectActions from '../../actions/project';
 import * as ProjectsActions from '../../actions/projects';
 import * as CollectionsActions from '../../actions/collections';
+import * as ToastActions from '../../actions/toast';
 import * as SortingActions from '../../actions/sorting';
 import getSortedCollections from '../../selectors/collections';
 import Loader from '../../../App/components/loader';
@@ -301,6 +302,7 @@ function mapDispatchToProps(dispatch) {
       CollectionsActions,
       ProjectsActions,
       ProjectActions,
+      ToastActions,
       SortingActions
     ),
     dispatch

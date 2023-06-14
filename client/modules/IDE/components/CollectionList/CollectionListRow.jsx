@@ -1,12 +1,13 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { bindActionCreators } from 'redux';
 import { withTranslation } from 'react-i18next';
 import * as ProjectActions from '../../actions/project';
 import * as CollectionsActions from '../../actions/collections';
 import * as IdeActions from '../../actions/ide';
+import * as ToastActions from '../../actions/toast';
 import dates from '../../../../utils/formatDate';
 
 import DownFilledTriangleIcon from '../../../../images/down-filled-triangle.svg';
@@ -280,7 +281,13 @@ CollectionListRowBase.defaultProps = {
 
 function mapDispatchToPropsSketchListRow(dispatch) {
   return bindActionCreators(
-    Object.assign({}, CollectionsActions, ProjectActions, IdeActions),
+    Object.assign(
+      {},
+      CollectionsActions,
+      ProjectActions,
+      IdeActions,
+      ToastActions
+    ),
     dispatch
   );
 }

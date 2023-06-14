@@ -42,16 +42,19 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import '../../../utils/htmlmixed';
 import '../../../utils/p5-javascript';
+import Timer from '../components/Timer';
+import EditorAccessibility from '../components/EditorAccessibility';
 import { metaKey } from '../../../utils/metaKey';
 import './show-hint';
 import * as hinter from '../../../utils/p5-hinter';
+
 import '../../../utils/codemirror-search';
 
 import beepUrl from '../../../sounds/audioAlert.mp3';
+import UnsavedChangesDotIcon from '../../../images/unsaved-changes-dot.svg';
 import RightArrowIcon from '../../../images/right-arrow.svg';
 import LeftArrowIcon from '../../../images/left-arrow.svg';
 import { getHTMLFile } from '../reducers/files';
-import { selectActiveFile } from '../selectors/files';
 
 import * as FileActions from '../actions/files';
 import * as IDEActions from '../actions/ide';
@@ -59,12 +62,8 @@ import * as ProjectActions from '../actions/project';
 import * as EditorAccessibilityActions from '../actions/editorAccessibility';
 import * as PreferencesActions from '../actions/preferences';
 import * as UserActions from '../../User/actions';
+import * as ToastActions from '../actions/toast';
 import * as ConsoleActions from '../actions/console';
-
-import AssetPreview from './AssetPreview';
-import Timer from './Timer';
-import EditorAccessibility from './EditorAccessibility';
-import UnsavedChangesIndicator from './UnsavedChangesIndicator';
 
 emmet(CodeMirror);
 
@@ -523,7 +522,15 @@ class Editor extends React.Component {
           <div className="editor__file-name">
             <span>
               {this.props.file.name}
-              <UnsavedChangesIndicator />
+              <span className="editor__unsaved-changes">
+                {this.props.unsavedChanges ? (
+                  <UnsavedChangesDotIcon
+                    role="img"
+                    aria-label={this.props.t('Editor.UnsavedChangesARIA')}
+                    focusable="false"
+                  />
+                ) : null}
+              </span>
             </span>
             <Timer />
           </div>
@@ -534,9 +541,6 @@ class Editor extends React.Component {
           }}
           className={editorHolderClass}
         />
-        {this.props.file.url ? (
-          <AssetPreview url={this.props.file.url} name={this.props.file.name} />
-        ) : null}
         <EditorAccessibility lintMessages={this.props.lintMessages} />
       </section>
     );
@@ -602,13 +606,17 @@ Editor.propTypes = {
 function mapStateToProps(state) {
   return {
     files: state.files,
-    file: selectActiveFile(state),
+    file:
+      state.files.find((file) => file.isSelectedFile) ||
+      state.files.find((file) => file.name === 'sketch.js') ||
+      state.files.find((file) => file.name !== 'root'),
     htmlFile: getHTMLFile(state.files),
     ide: state.ide,
     preferences: state.preferences,
     editorAccessibility: state.editorAccessibility,
     user: state.user,
     project: state.project,
+    toast: state.toast,
     consoleEvents: state.console,
 
     ...state.preferences,
@@ -629,6 +637,7 @@ function mapDispatchToProps(dispatch) {
       IDEActions,
       PreferencesActions,
       UserActions,
+      ToastActions,
       ConsoleActions
     ),
     dispatch

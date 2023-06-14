@@ -1,37 +1,30 @@
-/* eslint-disable import/no-import-module-exports */
-import { configureStore } from '@reduxjs/toolkit';
-import listenerMiddleware from './middleware';
+import { createStore, applyMiddleware, compose } from 'redux';
+import thunk from 'redux-thunk';
 import DevTools from './modules/App/components/DevTools';
 import rootReducer from './reducers';
 import { clearState, loadState } from './persistState';
 import getConfig from './utils/getConfig';
 
-// Enable DevTools only when rendering on client and during development.
-// Display the dock monitor only if no browser extension is found.
-export function showReduxDevTools() {
-  return (
-    getConfig('CLIENT') &&
-    getConfig('NODE_ENV') === 'development' &&
-    !window.__REDUX_DEVTOOLS_EXTENSION__
-  );
-}
+export default function configureStore(initialState) {
+  const enhancers = [applyMiddleware(thunk)];
 
-export default function setupStore(initialState) {
+  if (getConfig('CLIENT') && getConfig('NODE_ENV') === 'development') {
+    // Enable DevTools only when rendering on client and during development.
+    enhancers.push(
+      window.devToolsExtension
+        ? window.devToolsExtension()
+        : DevTools.instrument()
+    );
+  }
+
   const savedState = loadState();
   clearState();
 
-  const store = configureStore({
-    reducer: rootReducer,
-    middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware({
-        thunk: true,
-        serializableCheck: true,
-        // TODO: enable immutableCheck once the mutations are fixed.
-        immutableCheck: false
-      }).concat(listenerMiddleware.middleware),
-    preloadedState: savedState || initialState,
-    enhancers: showReduxDevTools() ? [DevTools.instrument()] : []
-  });
+  const store = createStore(
+    rootReducer,
+    savedState != null ? savedState : initialState,
+    compose(...enhancers)
+  );
 
   if (module.hot) {
     // Enable Webpack hot module replacement for reducers

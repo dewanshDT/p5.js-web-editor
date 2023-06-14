@@ -1,4 +1,4 @@
-import { createSelector } from '@reduxjs/toolkit';
+import { createSelector } from 'reselect';
 
 export const selectProjectOwner = (state) => state.project.owner;
 export const selectProjectId = (state) => state.project.id;

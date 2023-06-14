@@ -42,6 +42,7 @@ describe('Nav', () => {
     stopSketch: jest.fn(),
     setAllAccessibleOutput: jest.fn(),
     showToast: jest.fn(),
+    setToastText: jest.fn(),
     rootFile: {
       id: 'root-file'
     },

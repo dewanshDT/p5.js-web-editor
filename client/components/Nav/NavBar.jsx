@@ -6,7 +6,6 @@ import React, {
   useRef,
   useState
 } from 'react';
-import useKeyDownHandlers from '../../modules/IDE/hooks/useKeyDownHandlers';
 import { MenuOpenContext, NavBarContext } from './contexts';
 
 function NavBar({ children }) {
@@ -32,9 +31,18 @@ function NavBar({ children }) {
     };
   }, [nodeRef, setDropdownOpen]);
 
-  useKeyDownHandlers({
-    Esc: () => setDropdownOpen('none')
-  });
+  // TODO: replace with `useKeyDownHandlers` after #2052 is merged
+  useEffect(() => {
+    function handleKeyDown(e) {
+      if (e.keyCode === 27) {
+        setDropdownOpen('none');
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown, false);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown, false);
+    };
+  }, [setDropdownOpen]);
 
   const clearHideTimeout = useCallback(() => {
     if (timerRef.current) {

@@ -1,10 +1,10 @@
+import { browserHistory } from 'react-router';
 import { FORM_ERROR } from 'final-form';
 import * as ActionTypes from '../../constants';
-import { navigate } from '../../router';
 import apiClient from '../../utils/apiClient';
 import { showErrorModal, justOpenedProject } from '../IDE/actions/ide';
 import { setLanguage } from '../IDE/actions/preferences';
-import { showToast } from '../IDE/actions/toast';
+import { showToast, setToastText } from '../IDE/actions/toast';
 
 export function authError(error) {
   return {
@@ -57,7 +57,7 @@ export function validateAndLoginUser(formProps) {
             })
           );
           dispatch(justOpenedProject());
-          navigate(previousPath);
+          browserHistory.push(previousPath);
           resolve();
         })
         .catch((error) =>
@@ -78,7 +78,7 @@ export function validateAndSignUpUser(formValues) {
         .then((response) => {
           dispatch(authenticateUser(response.data));
           dispatch(justOpenedProject());
-          navigate(previousPath);
+          browserHistory.push(previousPath);
           resolve();
         })
         .catch((error) => {
@@ -138,7 +138,7 @@ export function resetProject(dispatch) {
   dispatch({
     type: ActionTypes.CLEAR_CONSOLE
   });
-  navigate('/');
+  browserHistory.push('/');
 }
 
 export function logoutUser() {
@@ -164,7 +164,7 @@ export function initiateResetPassword(formValues) {
       dispatch({
         type: ActionTypes.RESET_PASSWORD_INITIATE
       });
-      apiClient
+      return apiClient
         .post('/reset-password', formValues)
         .then(() => resolve())
         .catch((error) => {
@@ -245,12 +245,12 @@ export function validateResetPasswordToken(token) {
 
 export function updatePassword(formValues, token) {
   return (dispatch) =>
-    new Promise((resolve) => {
+    new Promise((resolve) =>
       apiClient
         .post(`/reset-password/${token}`, formValues)
         .then((response) => {
           dispatch(authenticateUser(response.data));
-          navigate('/');
+          browserHistory.push('/');
           resolve();
         })
         .catch((error) => {
@@ -258,8 +258,8 @@ export function updatePassword(formValues, token) {
             type: ActionTypes.INVALID_RESET_PASSWORD_TOKEN
           });
           resolve({ error });
-        });
-    });
+        })
+    );
 }
 
 export function updateSettingsSuccess(user) {
@@ -275,15 +275,16 @@ export function submitSettings(formValues) {
 
 export function updateSettings(formValues) {
   return (dispatch) =>
-    new Promise((resolve) => {
+    new Promise((resolve) =>
       submitSettings(formValues)
         .then((response) => {
           dispatch(updateSettingsSuccess(response.data));
-          dispatch(showToast('Toast.SettingsSaved', 5500));
+          dispatch(showToast(5500));
+          dispatch(setToastText('Toast.SettingsSaved'));
           resolve();
         })
-        .catch((error) => resolve({ error }));
-    });
+        .catch((error) => resolve({ error }))
+    );
 }
 
 export function createApiKeySuccess(user) {

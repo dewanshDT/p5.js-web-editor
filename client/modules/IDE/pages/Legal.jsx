@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { browserHistory } from 'react-router';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import PrivacyPolicy from './PrivacyPolicy';
@@ -28,8 +29,7 @@ const TabTitle = styled.p`
   }
 `;
 
-function Legal() {
-  const location = useLocation();
+function Legal({ location }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const { t } = useTranslation();
   useEffect(() => {
@@ -42,19 +42,17 @@ function Legal() {
     }
   }, [location]);
 
-  const navigate = useNavigate();
-
   function onSelect(index, lastIndex, event) {
     if (index === lastIndex) return;
     if (index === 0) {
       setSelectedIndex(0);
-      navigate('/privacy-policy');
+      browserHistory.push('/privacy-policy');
     } else if (index === 1) {
       setSelectedIndex(1);
-      navigate('/terms-of-use');
+      browserHistory.push('/terms-of-use');
     } else if (index === 2) {
       setSelectedIndex(2);
-      navigate('/code-of-conduct');
+      browserHistory.push('/code-of-conduct');
     }
   }
 
@@ -86,5 +84,11 @@ function Legal() {
     </RootPage>
   );
 }
+
+Legal.propTypes = {
+  location: PropTypes.shape({
+    pathname: PropTypes.string
+  }).isRequired
+};
 
 export default Legal;
