@@ -215,3 +215,5 @@ const MobileIDEView = () => {
     </Screen>
   );
 };
+
+export default MobileIDEView;
