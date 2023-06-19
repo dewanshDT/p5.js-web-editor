@@ -15,7 +15,7 @@ import Dropdown from '../../../components/Dropdown';
 import ActionStrip from '../../../components/mobile/ActionStrip';
 import MobileExplorer from '../../../components/mobile/Explorer';
 import Footer from '../../../components/mobile/Footer';
-import Header from '../../../components/mobile/Header';
+import MobileHeader from '../../../components/mobile/MobileHeader';
 import IconButton from '../../../components/mobile/IconButton';
 import IDEWrapper from '../../../components/mobile/IDEWrapper';
 import Screen from '../../../components/mobile/MobileScreen';
@@ -148,7 +148,7 @@ const MobileIDEView = () => {
     <Screen>
       <AutosaveHandler />
       <Explorer />
-      <Header
+      <MobileHeader
         title={
           <span>
             {project.name}
@@ -175,7 +175,7 @@ const MobileIDEView = () => {
             aria-label={t('Toolbar.PlaySketchARIA')}
           />
         </li>
-      </Header>
+      </MobileHeader>
       <Toast />
 
       <IDEWrapper>

@@ -75,7 +75,7 @@ export default {
     Button: {
       primary: {
         default: {
-          foreground: colors.black,
+          foreground: grays.mediumDark,
           background: grays.light,
           border: grays.middleLight
         },
@@ -127,6 +127,10 @@ export default {
         foreground: colors.black,
         background: grays.light,
         border: grays.middleLight
+      },
+      secondary: {
+        foreground: colors.black,
+        background: grays.mediumLight
       }
     },
     Modal: {
@@ -209,6 +213,10 @@ export default {
         foreground: grays.light,
         background: grays.dark,
         border: grays.middleDark
+      },
+      secondary: {
+        background: grays.mediumDark,
+        foreground: grays.light
       }
     },
     Modal: {

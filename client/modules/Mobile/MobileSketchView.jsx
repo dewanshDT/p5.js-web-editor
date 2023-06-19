@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { ExitIcon } from '../../common/icons';
 import Footer from '../../components/mobile/Footer';
-import Header from '../../components/mobile/Header';
+import MobileHeader from '../../components/mobile/MobileHeader';
 import IconButton from '../../components/mobile/IconButton';
 import Screen from '../../components/mobile/MobileScreen';
 import { startSketch, stopSketch } from '../IDE/actions/ide';
@@ -26,7 +26,7 @@ const MobileSketchView = () => {
 
   return (
     <Screen>
-      <Header
+      <MobileHeader
         leftButton={
           <IconButton to="/" icon={ExitIcon} aria-label={t('Nav.BackEditor')} />
         }

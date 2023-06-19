@@ -4,28 +4,25 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
-import { availableLanguages, languageKeyToLabel } from '../i18n';
-import * as IDEActions from '../modules/IDE/actions/ide';
-import * as toastActions from '../modules/IDE/actions/toast';
-import * as projectActions from '../modules/IDE/actions/project';
-import {
-  setAllAccessibleOutput,
-  setLanguage
-} from '../modules/IDE/actions/preferences';
-import { selectRootFile } from '../modules/IDE/selectors/files';
-import { logoutUser } from '../modules/User/actions';
+import { availableLanguages, languageKeyToLabel } from '../../../../i18n';
+import * as IDEActions from '../../actions/ide';
+import * as toastActions from '../../actions/toast';
+import * as projectActions from '../../actions/project';
+import { setAllAccessibleOutput, setLanguage } from '../../actions/preferences';
+import { selectRootFile } from '../../selectors/files';
+import { logoutUser } from '../../../User/actions';
 
-import getConfig from '../utils/getConfig';
-import { metaKeyName, metaKey } from '../utils/metaKey';
-import { withRouter } from '../utils/router-compatibilty';
-import { getIsUserOwner } from '../modules/IDE/selectors/users';
-import { selectSketchPath } from '../modules/IDE/selectors/project';
+import getConfig from '../../../../utils/getConfig';
+import { metaKeyName, metaKey } from '../../../../utils/metaKey';
+import { withRouter } from '../../../../utils/router-compatibilty';
+import { getIsUserOwner } from '../../selectors/users';
+import { selectSketchPath } from '../../selectors/project';
 
-import CaretLeftIcon from '../images/left-arrow.svg';
-import LogoIcon from '../images/p5js-logo-small.svg';
-import NavDropdownMenu from './Nav/NavDropdownMenu';
-import NavMenuItem from './Nav/NavMenuItem';
-import NavBar from './Nav/NavBar';
+import CaretLeftIcon from '../../../../images/left-arrow.svg';
+import LogoIcon from '../../../../images/p5js-logo-small.svg';
+import NavDropdownMenu from '../../../../components/Nav/NavDropdownMenu';
+import NavMenuItem from '../../../../components/Nav/NavMenuItem';
+import NavBar from '../../../../components/Nav/NavBar';
 
 class Nav extends React.PureComponent {
   constructor(props) {
@@ -50,7 +47,7 @@ class Nav extends React.PureComponent {
 
   handleSave() {
     if (this.props.user.authenticated) {
-      this.props.saveProject(this.props.cmController.getContent());
+      this.props.saveProject(this.props.cmController?.getContent());
     } else {
       this.props.showErrorModal('forceAuthentication');
     }
@@ -171,17 +168,17 @@ class Nav extends React.PureComponent {
           </NavMenuItem>
         </NavDropdownMenu>
         <NavDropdownMenu id="edit" title={this.props.t('Nav.Edit.Title')}>
-          <NavMenuItem onClick={this.props.cmController.tidyCode}>
+          <NavMenuItem onClick={this.props.cmController?.tidyCode}>
             {this.props.t('Nav.Edit.TidyCode')}
             <span className="nav__keyboard-shortcut">
               {metaKeyName}+{'\u21E7'}+F
             </span>
           </NavMenuItem>
-          <NavMenuItem onClick={this.props.cmController.showFind}>
+          <NavMenuItem onClick={this.props.cmController?.showFind}>
             {this.props.t('Nav.Edit.Find')}
             <span className="nav__keyboard-shortcut">{metaKeyName}+F</span>
           </NavMenuItem>
-          <NavMenuItem onClick={this.props.cmController.showReplace}>
+          <NavMenuItem onClick={this.props.cmController?.showReplace}>
             {this.props.t('Nav.Edit.Replace')}
             <span className="nav__keyboard-shortcut">{replaceCommand}</span>
           </NavMenuItem>

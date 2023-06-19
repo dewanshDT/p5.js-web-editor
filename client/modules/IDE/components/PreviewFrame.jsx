@@ -9,9 +9,10 @@ const Frame = styled.iframe`
   min-width: 100%;
   position: ${(props) => (props.fullView ? 'relative' : 'absolute')};
   border-width: 0;
+  display: ${(props) => (props.hide ? 'none' : 'block')};
 `;
 
-function PreviewFrame({ fullView }) {
+function PreviewFrame({ fullView, hide }) {
   const iframe = useRef();
   const previewUrl = getConfig('PREVIEW_URL');
   useEffect(() => {
@@ -40,16 +41,19 @@ function PreviewFrame({ fullView }) {
       frameBorder="0"
       ref={iframe}
       fullView={fullView}
+      hide={hide}
     />
   );
 }
 
 PreviewFrame.propTypes = {
-  fullView: PropTypes.bool
+  fullView: PropTypes.bool,
+  hide: PropTypes.bool
 };
 
 PreviewFrame.defaultProps = {
-  fullView: false
+  fullView: false,
+  hide: false
 };
 
 export default PreviewFrame;

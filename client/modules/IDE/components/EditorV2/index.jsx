@@ -1,3 +1,5 @@
+// TODO: convert to functional component
+
 import PropTypes from 'prop-types';
 import React from 'react';
 import CodeMirror from 'codemirror';
@@ -40,31 +42,35 @@ import classNames from 'classnames';
 import { debounce } from 'lodash';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import '../../../utils/htmlmixed';
-import '../../../utils/p5-javascript';
-import { metaKey } from '../../../utils/metaKey';
-import './show-hint';
-import * as hinter from '../../../utils/p5-hinter';
-import '../../../utils/codemirror-search';
+import MediaQuery from 'react-responsive';
+import '../../../../utils/htmlmixed';
+import '../../../../utils/p5-javascript';
+import { metaKey } from '../../../../utils/metaKey';
+import '../show-hint';
+import * as hinter from '../../../../utils/p5-hinter';
+import '../../../../utils/codemirror-search';
 
-import beepUrl from '../../../sounds/audioAlert.mp3';
-import RightArrowIcon from '../../../images/right-arrow.svg';
-import LeftArrowIcon from '../../../images/left-arrow.svg';
-import { getHTMLFile } from '../reducers/files';
-import { selectActiveFile } from '../selectors/files';
+import beepUrl from '../../../../sounds/audioAlert.mp3';
+import RightArrowIcon from '../../../../images/right-arrow.svg';
+import LeftArrowIcon from '../../../../images/left-arrow.svg';
+import { getHTMLFile } from '../../reducers/files';
+import { selectActiveFile } from '../../selectors/files';
 
-import * as FileActions from '../actions/files';
-import * as IDEActions from '../actions/ide';
-import * as ProjectActions from '../actions/project';
-import * as EditorAccessibilityActions from '../actions/editorAccessibility';
-import * as PreferencesActions from '../actions/preferences';
-import * as UserActions from '../../User/actions';
-import * as ConsoleActions from '../actions/console';
+import * as FileActions from '../../actions/files';
+import * as IDEActions from '../../actions/ide';
+import * as ProjectActions from '../../actions/project';
+import * as EditorAccessibilityActions from '../../actions/editorAccessibility';
+import * as PreferencesActions from '../../actions/preferences';
+import * as UserActions from '../../../User/actions';
+import * as ConsoleActions from '../../actions/console';
 
-import AssetPreview from './AssetPreview';
-import Timer from './Timer';
-import EditorAccessibility from './EditorAccessibility';
-import UnsavedChangesIndicator from './UnsavedChangesIndicator';
+import AssetPreview from '../AssetPreview';
+import Timer from '../Timer';
+import EditorAccessibility from '../EditorAccessibility';
+import UnsavedChangesIndicator from '../UnsavedChangesIndicator';
+import { EditorContainer, EditorHolder } from './MobileEditor';
+import { FolderIcon } from '../../../../common/icons';
+import IconButton from '../../../../components/mobile/IconButton';
 
 emmet(CodeMirror);
 
@@ -74,7 +80,7 @@ window.HTMLHint = HTMLHint;
 
 const INDENTATION_AMOUNT = 2;
 
-class Editor extends React.Component {
+class EditorV2 extends React.Component {
   constructor(props) {
     super(props);
     this.tidyCode = this.tidyCode.bind(this);
@@ -97,7 +103,7 @@ class Editor extends React.Component {
 
   componentDidMount() {
     this.beep = new Audio(beepUrl);
-    this.widgets = [];
+    // this.widgets = [];
     this._cm = CodeMirror(this.codemirrorContainer, {
       theme: `p5-${this.props.theme}`,
       lineNumbers: this.props.lineNumbers,
@@ -511,46 +517,82 @@ class Editor extends React.Component {
     });
 
     return (
-      <section className={editorSectionClass}>
-        <header className="editor__header">
-          <button
-            aria-label={this.props.t('Editor.OpenSketchARIA')}
-            className="sidebar__contract"
-            onClick={this.props.collapseSidebar}
-          >
-            <LeftArrowIcon focusable="false" aria-hidden="true" />
-          </button>
-          <button
-            aria-label={this.props.t('Editor.CloseSketchARIA')}
-            className="sidebar__expand"
-            onClick={this.props.expandSidebar}
-          >
-            <RightArrowIcon focusable="false" aria-hidden="true" />
-          </button>
-          <div className="editor__file-name">
-            <span>
-              {this.props.file.name}
-              <UnsavedChangesIndicator />
-            </span>
-            <Timer />
-          </div>
-        </header>
-        <article
-          ref={(element) => {
-            this.codemirrorContainer = element;
-          }}
-          className={editorHolderClass}
-        />
-        {this.props.file.url ? (
-          <AssetPreview url={this.props.file.url} name={this.props.file.name} />
-        ) : null}
-        <EditorAccessibility lintMessages={this.props.lintMessages} />
-      </section>
+      <MediaQuery minWidth={770}>
+        {(matches) =>
+          matches ? (
+            <section className={editorSectionClass}>
+              <header className="editor__header">
+                <button
+                  aria-label={this.props.t('Editor.OpenSketchARIA')}
+                  className="sidebar__contract"
+                  onClick={this.props.collapseSidebar}
+                >
+                  <LeftArrowIcon focusable="false" aria-hidden="true" />
+                </button>
+                <button
+                  aria-label={this.props.t('Editor.CloseSketchARIA')}
+                  className="sidebar__expand"
+                  onClick={this.props.expandSidebar}
+                >
+                  <RightArrowIcon focusable="false" aria-hidden="true" />
+                </button>
+                <div className="editor__file-name">
+                  <span>
+                    {this.props.file.name}
+                    <UnsavedChangesIndicator />
+                  </span>
+                  <Timer />
+                </div>
+              </header>
+              <article
+                ref={(element) => {
+                  this.codemirrorContainer = element;
+                }}
+                className={editorHolderClass}
+              />
+              {this.props.file.url ? (
+                <AssetPreview
+                  url={this.props.file.url}
+                  name={this.props.file.name}
+                />
+              ) : null}
+              <EditorAccessibility lintMessages={this.props.lintMessages} />
+            </section>
+          ) : (
+            <EditorContainer expanded={this.props.isExpanded}>
+              <header>
+                <IconButton
+                  onClick={this.props.expandSidebar}
+                  icon={FolderIcon}
+                />
+                <span>
+                  {this.props.file.name}
+                  <UnsavedChangesIndicator />
+                </span>
+              </header>
+              <section>
+                <EditorHolder
+                  ref={(element) => {
+                    this.codemirrorContainer = element;
+                  }}
+                />
+                {this.props.file.url ? (
+                  <AssetPreview
+                    url={this.props.file.url}
+                    name={this.props.file.name}
+                  />
+                ) : null}
+                <EditorAccessibility lintMessages={this.props.lintMessages} />
+              </section>
+            </EditorContainer>
+          )
+        }
+      </MediaQuery>
     );
   }
 }
 
-Editor.propTypes = {
+EditorV2.propTypes = {
   autocloseBracketsQuotes: PropTypes.bool.isRequired,
   autocompleteHinter: PropTypes.bool.isRequired,
   lineNumbers: PropTypes.bool.isRequired,
@@ -643,5 +685,5 @@ function mapDispatchToProps(dispatch) {
 }
 
 export default withTranslation()(
-  connect(mapStateToProps, mapDispatchToProps)(Editor)
+  connect(mapStateToProps, mapDispatchToProps)(EditorV2)
 );

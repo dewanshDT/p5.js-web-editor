@@ -3,12 +3,13 @@ import styled from 'styled-components';
 import { prop } from '../theme';
 
 const RootPage = styled.div`
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   color: ${prop('primaryTextColor')};
+  overflow: hidden;
   background-color: ${prop('backgroundColor')};
-  height: ${({ fixedHeight }) => fixedHeight || 'initial'};
+  /* height: ${({ fixedHeight }) => fixedHeight || 'initial'}; */
 `;
 
 RootPage.propTypes = {

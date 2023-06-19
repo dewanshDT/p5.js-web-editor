@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import styled from 'styled-components';
 import { ExitIcon } from '../../common/icons';
-import Header from '../../components/mobile/Header';
+import MobileHeader from '../../components/mobile/MobileHeader';
 
 import IconButton from '../../components/mobile/IconButton';
 import Screen from '../../components/mobile/MobileScreen';
@@ -24,9 +24,9 @@ const MobilePreferences = () => {
   return (
     <Screen>
       <section>
-        <Header transparent title={t('MobileIDEView.Preferences')}>
+        <MobileHeader transparent title={t('MobileIDEView.Preferences')}>
           <IconButton to="/" icon={ExitIcon} aria-label={t('Nav.BackEditor')} />
-        </Header>
+        </MobileHeader>
         <PreferencesContent />
       </section>
     </Screen>

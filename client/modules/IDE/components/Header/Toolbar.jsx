@@ -4,14 +4,14 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import classNames from 'classnames';
 import { withTranslation } from 'react-i18next';
-import * as IDEActions from '../actions/ide';
-import * as preferenceActions from '../actions/preferences';
-import * as projectActions from '../actions/project';
+import * as IDEActions from '../../actions/ide';
+import * as preferenceActions from '../../actions/preferences';
+import * as projectActions from '../../actions/project';
 
-import PlayIcon from '../../../images/play.svg';
-import StopIcon from '../../../images/stop.svg';
-import PreferencesIcon from '../../../images/preferences.svg';
-import EditProjectNameIcon from '../../../images/pencil.svg';
+import PlayIcon from '../../../../images/play.svg';
+import StopIcon from '../../../../images/stop.svg';
+import PreferencesIcon from '../../../../images/preferences.svg';
+import EditProjectNameIcon from '../../../../images/pencil.svg';
 
 class Toolbar extends React.Component {
   constructor(props) {
@@ -86,8 +86,8 @@ class Toolbar extends React.Component {
     });
     const nameContainerClass = classNames({
       'toolbar__project-name-container': true,
-      'toolbar__project-name-container--editing': this.props.project
-        .isEditingName
+      'toolbar__project-name-container--editing':
+        this.props.project.isEditingName
     });
 
     const canEditProjectName = this.canEditProjectName();
@@ -112,6 +112,7 @@ class Toolbar extends React.Component {
           onClick={() => {
             this.props.syncFileContent();
             this.props.startSketch();
+            console.log('play button pressed');
           }}
           aria-label={this.props.t('Toolbar.PlayOnlyVisualSketchARIA')}
           title={this.props.t('Toolbar.PlaySketchARIA')}

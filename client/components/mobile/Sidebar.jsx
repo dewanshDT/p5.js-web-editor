@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { remSize, prop } from '../../theme';
-import Header from './Header';
+import MobileHeader from './MobileHeader';
 import IconButton from './IconButton';
 import { ExitIcon } from '../../common/icons';
 
@@ -21,13 +21,13 @@ const SidebarWrapper = styled.div`
 const Sidebar = ({ title, onPressClose, children }) => (
   <SidebarWrapper>
     {title && (
-      <Header slim title={title} fixed={false}>
+      <MobileHeader slim title={title} fixed={false}>
         <IconButton
           onClick={onPressClose}
           icon={ExitIcon}
           aria-label="Return to ide view"
         />
-      </Header>
+      </MobileHeader>
     )}
     {children}
   </SidebarWrapper>
