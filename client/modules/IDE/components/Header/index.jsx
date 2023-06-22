@@ -13,10 +13,6 @@ import { MoreIcon } from '../../../../common/icons';
 import IconButton from '../../../../components/mobile/IconButton';
 import MobileNav from './MobileNav';
 
-const NavItem = styled.li`
-  position: relative;
-`;
-
 const Header = (props) => {
   const project = useSelector((state) => state.project);
 
