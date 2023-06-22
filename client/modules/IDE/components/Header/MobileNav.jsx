@@ -32,6 +32,10 @@ const IconContainer = styled.div`
   > svg {
     width: 100%;
     height: 100%;
+    > path {
+      fill: ${prop('accentColor')};
+      stroke: ${prop('accentColor')};
+    }
   }
 `;
 
@@ -161,7 +165,7 @@ const MobileNav = () => {
 
 const Menu = ({ currentMenu, setCurrentMenu }) => {
   const { t } = useTranslation();
-  const menuRef = useRef();
+  const dispatch = useDispatch();
 
   return (
     <DropDown>
@@ -204,7 +208,14 @@ const Menu = ({ currentMenu, setCurrentMenu }) => {
           {/* TODO: Add Translations */}
           <b>Settings</b>
           <li>
-            <button>Preferences</button>
+            <button
+              onClick={() => {
+                dispatch(openPreferences());
+                setCurrentMenu(null);
+              }}
+            >
+              Preferences
+            </button>
           </li>
           <li>
             <button>Language</button>

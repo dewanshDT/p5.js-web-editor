@@ -71,6 +71,7 @@ export default {
     primaryTextColor: grays.dark,
     inactiveTextColor: grays.middleDark,
     backgroundColor: grays.lighter,
+    accentColor: colors.p5jsPink,
 
     Button: {
       primary: {
@@ -157,6 +158,7 @@ export default {
     primaryTextColor: grays.lightest,
     inactiveTextColor: grays.middleLight,
     backgroundColor: grays.darker,
+    accentColor: colors.p5jsPink,
 
     Button: {
       primary: {
@@ -243,6 +245,7 @@ export default {
     primaryTextColor: grays.lightest,
     inactiveTextColor: grays.light,
     backgroundColor: grays.darker,
+    accentColor: colors.yellow,
 
     Button: {
       primary: {
@@ -299,6 +302,10 @@ export default {
         foreground: grays.light,
         background: grays.dark,
         border: grays.middleDark
+      },
+      secondary: {
+        background: grays.mediumDark,
+        foreground: grays.light
       }
     },
     Modal: {
