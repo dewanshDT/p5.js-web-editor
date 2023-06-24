@@ -1,31 +1,29 @@
 import React from 'react';
-import { useEffect, useState, useRef } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-import PropTypes from 'prop-types';
+import { useLocation, useNavigate } from 'react-router';
 import { prop, remSize } from '../../../../theme';
 import AstriskIcon from '../../../../images/p5-asterisk.svg';
 import IconButton from '../../../../components/mobile/IconButton';
 import { AccountIcon, MoreIcon } from '../../../../common/icons';
 import { openPreferences } from '../../actions/ide';
+import { logoutUser } from '../../../User/actions';
 
 const Nav = styled.div`
   background: ${prop('MobilePanel.default.background')};
   color: ${prop('primaryTextColor')};
-  padding-top: ${remSize(12)};
-  padding-bottom: ${remSize(12)};
-  padding-left: ${remSize(16)};
-  padding-right: ${remSize(16)};
+  padding: ${remSize(8)} 0;
   gap: ${remSize(14)};
   display: flex;
   align-items: center;
   font-size: ${remSize(10)};
 `;
 
-const IconContainer = styled.div`
+const LogoContainer = styled.div`
   width: ${remSize(28)};
   aspect-ratio: 1;
+  margin-left: ${remSize(14)};
   display: flex;
   justify-content: center;
   align-items: center;
@@ -58,65 +56,79 @@ const Info = styled.div`
 const Options = styled.div`
   margin-left: auto;
   display: flex;
-  transform: translateX(${remSize(12)});
+  /* transform: translateX(${remSize(12)}); */
   svg {
     fill: ${(props) => props.color};
   }
-`;
 
-const DropDown = styled.ul`
-  position: absolute;
-  z-index: 2;
-  top: ${remSize(60)};
-  right: ${remSize(12)};
+  /* Drop Down menu */
 
-  > button[data-type='menu-backdrop'] {
-    position: absolute;
-    z-index: -10;
-    background-color: #00000005;
-    transform: translate(-550px, -100px);
-    height: 9999px;
-    width: 9999px;
-    cursor: default;
+  > div > button:focus + ul,
+  > div > ul > button:focus ~ div > ul {
+    transform: scale(1);
+    opacity: 1;
   }
 
-  > ul {
-    ${prop('MobilePanel.default')}
-    display: flex;
-    flex-direction: column;
-    box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
-      rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
-    min-width: ${remSize(120)};
-    border-radius: ${remSize(2)};
-
-    > b {
-      margin: ${remSize(6)} ${remSize(12)};
-      position: relative;
-      width: min-content;
-      &::after {
-        content: '';
-        position: absolute;
-        opacity: calc(0.5);
-        top: 50%;
-        transform: translate(100%, -50%);
-        right: ${remSize(-6)};
-        width: ${remSize(55)};
-        height: 1px;
-        background-color: ${prop('Button.primary.default.foreground')};
-      }
-    }
-
-    > li {
+  > div {
+    position: relative;
+    ul {
+      ${prop('MobilePanel.default')}
+      position: absolute;
+      overflow: hidden;
+      z-index: 2;
+      right: 10px;
+      transform: translateX(${remSize(6)});
+      width: max-content;
+      transform: scale(0);
+      opacity: 0;
+      transform-origin: top;
+      transition: opacity 100ms;
+      transition: transform 100ms 200ms;
       display: flex;
-      width: 100%;
-      > button {
+      flex-direction: column;
+      gap: ${remSize(2)};
+      box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
+        rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+      min-width: ${remSize(120)};
+      border-radius: ${remSize(2)};
+
+      /* User */
+      li.user {
+        color: ${prop('colors.processingBlue')};
+        font-size: ${remSize(16)};
+        font-weight: bold;
+        margin: ${remSize(6)} ${remSize(12)};
+      }
+
+      > b {
+        margin: ${remSize(6)} ${remSize(12)};
+        position: relative;
+        width: min-content;
+        &::after {
+          content: '';
+          position: absolute;
+          opacity: calc(0.5);
+          top: 50%;
+          transform: translate(100%, -50%);
+          right: ${remSize(-6)};
+          width: ${remSize(55)};
+          height: 1px;
+          background-color: ${prop('Button.primary.default.foreground')};
+        }
+      }
+
+      > li {
+        display: flex;
         width: 100%;
-        padding: ${remSize(8)} ${remSize(15)} ${remSize(8)} ${remSize(10)};
-        font-size: ${remSize(18)};
-        text-align: left;
-        &:hover {
-          background-color: ${prop('Button.primary.hover.background')};
-          color: ${prop('Button.primary.hover.foreground')};
+        > button {
+          width: 100%;
+          padding: ${remSize(8)} ${remSize(15)} ${remSize(8)} ${remSize(10)};
+          font-size: ${remSize(18)};
+          text-align: left;
+          &:hover {
+            background-color: ${prop('Button.primary.hover.background')};
+            color: ${prop('Button.primary.hover.foreground')};
+          }
         }
       }
     }
@@ -125,136 +137,128 @@ const DropDown = styled.ul`
 
 const MobileNav = () => {
   const project = useSelector((state) => state.project);
-  const [currentMenu, setCurrentMenu] = useState(null);
-  const { t } = useTranslation();
+  const user = useSelector((state) => state.user);
+  const navigate = useNavigate();
+  console.log(user.authenticated);
 
   const Logo = AstriskIcon;
   return (
+    <Nav>
+      <LogoContainer>
+        <Logo />
+      </LogoContainer>
+      <Info>
+        <h1>{project.name}</h1>
+        {project?.owner && <h5>by {project?.owner?.username}</h5>}
+      </Info>
+      <Options>
+        {user.authenticated ? (
+          <AccoutnMenu />
+        ) : (
+          <div>
+            <IconButton
+              onClick={() => {
+                navigate('/login');
+              }}
+              icon={AccountIcon}
+            />
+          </div>
+        )}
+        <MoreMenu />
+      </Options>
+    </Nav>
+  );
+};
+
+const AccoutnMenu = () => {
+  const user = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  return (
     <div>
-      <Nav>
-        <IconContainer>
-          <Logo />
-        </IconContainer>
-        <Info>
-          <h1>{project.name}</h1>
-          {project?.owner && <h5>by {project?.owner?.username}</h5>}
-        </Info>
-        <Options>
-          <IconButton
+      <IconButton icon={AccountIcon} />
+      <ul>
+        <li className="user">{user.username}</li>
+        <li>
+          <button
             onClick={() => {
-              if (currentMenu === 'account') setCurrentMenu(null);
-              else setCurrentMenu('account');
+              navigate(`/${user.username}/sketches`);
             }}
-            icon={AccountIcon}
-          />
-          <IconButton
-            onClick={() => {
-              if (currentMenu === 'more') setCurrentMenu(null);
-              else setCurrentMenu('more');
-            }}
-            icon={MoreIcon}
-          />
-        </Options>
-      </Nav>
-      {currentMenu && (
-        <Menu setCurrentMenu={setCurrentMenu} currentMenu={currentMenu} />
-      )}
+          >
+            My Stuff
+          </button>
+        </li>
+        <li>
+          <button>Settings</button>
+        </li>
+        <li>
+          <button onClick={() => dispatch(logoutUser())}>Log Out</button>
+        </li>
+      </ul>
     </div>
   );
 };
 
-const Menu = ({ currentMenu, setCurrentMenu }) => {
-  const { t } = useTranslation();
+const MoreMenu = () => {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
 
   return (
-    <DropDown>
-      <button data-type="menu-backdrop" onClick={() => setCurrentMenu(null)}>
-        {' '}
-      </button>
-      {currentMenu === 'more' && (
-        <ul>
-          <b>{t('Nav.File.Title')}</b>
-          <li>
-            <button
-              onClick={() => {
-                console.log('file clicked');
-                setCurrentMenu(null);
-              }}
-            >
-              {t('Nav.File.New')}
-            </button>
-          </li>
-          <li>
-            <button>{t('Common.Save')}</button>
-          </li>
-          <li>
-            <button>{t('Nav.File.Examples')}</button>
-          </li>
-          <b>{t('Nav.Edit.Title')}</b>
-          <li>
-            <button>{t('Nav.Edit.TidyCode')}</button>
-          </li>
-          <li>
-            <button>{t('Nav.Edit.Find')}</button>
-          </li>
-          <b>{t('Nav.Sketch.Title')}</b>
-          <li>
-            <button>{t('Nav.Sketch.AddFile')}</button>
-          </li>
-          <li>
-            <button>{t('Nav.Sketch.AddFolder')}</button>
-          </li>
-          {/* TODO: Add Translations */}
-          <b>Settings</b>
-          <li>
-            <button
-              onClick={() => {
-                dispatch(openPreferences());
-                setCurrentMenu(null);
-              }}
-            >
-              Preferences
-            </button>
-          </li>
-          <li>
-            <button>Language</button>
-          </li>
-          <b>{t('Nav.Help.Title')}</b>
-          <li>
-            <button>{t('Nav.Help.KeyboardShortcuts')}</button>
-          </li>
-          <li>
-            <button>{t('Nav.Help.Reference')}</button>
-          </li>
-          <li>
-            <button>{t('Nav.Help.About')}</button>
-          </li>
-        </ul>
-      )}
-      {currentMenu === 'account' && (
-        <ul>
-          <li>
-            <button>{t('Nav.File.New')}</button>
-          </li>
-          <li>
-            <button>{t('Nav.File.New')}</button>
-          </li>
-          <li>
-            <button>{t('Nav.File.New')}</button>
-          </li>
-          <li>
-            <button>{t('Nav.File.New')}</button>
-          </li>
-        </ul>
-      )}
-    </DropDown>
+    <div>
+      <IconButton icon={MoreIcon} />
+      <ul>
+        <b>{t('Nav.File.Title')}</b>
+        <li>
+          <button>{t('Nav.File.New')}</button>
+        </li>
+        <li>
+          <button>{t('Common.Save')}</button>
+        </li>
+        <li>
+          <button>{t('Nav.File.Examples')}</button>
+        </li>
+        <b>{t('Nav.Edit.Title')}</b>
+        <li>
+          <button>{t('Nav.Edit.TidyCode')}</button>
+        </li>
+        <li>
+          <button>{t('Nav.Edit.Find')}</button>
+        </li>
+        <b>{t('Nav.Sketch.Title')}</b>
+        <li>
+          <button>{t('Nav.Sketch.AddFile')}</button>
+        </li>
+        <li>
+          <button>{t('Nav.Sketch.AddFolder')}</button>
+        </li>
+        {/* TODO: Add Translations */}
+        <b>Settings</b>
+        <li>
+          <button
+            onClick={() => {
+              dispatch(openPreferences());
+            }}
+          >
+            Preferences
+          </button>
+        </li>
+        <li>
+          <button>Language</button>
+        </li>
+        <b>{t('Nav.Help.Title')}</b>
+        <li>
+          <button>{t('Nav.Help.KeyboardShortcuts')}</button>
+        </li>
+        <li>
+          <button>{t('Nav.Help.Reference')}</button>
+        </li>
+        <li>
+          <button>{t('Nav.Help.About')}</button>
+        </li>
+      </ul>
+    </div>
   );
-};
-
-Menu.propTypes = {
-  currentMenu: PropTypes.string.isRequired,
-  setCurrentMenu: PropTypes.func.isRequired
 };
 
 export default MobileNav;
