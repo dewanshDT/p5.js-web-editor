@@ -35,9 +35,20 @@ export const EditorHolder = styled.div`
   min-height: 100%;
 `;
 
+export const PreviewWrapper = styled.div`
+  display: ${(props) => (props.show ? 'block' : 'none')};
+  position: relative;
+  height: 100vh;
+  min-width: 100%;
+
+  .preview-console {
+    z-index: 1;
+  }
+`;
+
 export const EditorSidebarWrapper = styled.div`
+  display: ${(props) => (props.show ? 'flex' : 'none')};
   height: 100%;
-  display: flex;
   position: relative;
 `;
 

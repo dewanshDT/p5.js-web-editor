@@ -32,7 +32,8 @@ import FloatingActionButton from '../components/FloatingActionButton';
 import EditorV2 from '../components/EditorV2';
 import {
   EditorSidebarWrapper,
-  FileDrawer
+  FileDrawer,
+  PreviewWrapper
 } from '../components/EditorV2/MobileEditor';
 import IconButton from '../../../components/mobile/IconButton';
 import { PlusIcon } from '../../../common/icons';
@@ -289,12 +290,22 @@ const IDEViewV2 = (props) => {
           ) : (
             <>
               <FloatingActionButton syncFileContent={syncFileContent} />
-              <PreviewFrame
-                fullView
-                hide={!props.ide.isPlaying}
-                cmController={cmController}
-              />
-              <EditorSidebarWrapper>
+              <PreviewWrapper show={props.ide.isPlaying}>
+                <SplitPane
+                  style={{ position: 'static' }}
+                  split="horizontal"
+                  primary="second"
+                  size={50}
+                >
+                  <PreviewFrame
+                    fullView
+                    hide={!props.ide.isPlaying}
+                    cmController={cmController}
+                  />
+                  <Console />
+                </SplitPane>
+              </PreviewWrapper>
+              <EditorSidebarWrapper show={!props.ide.isPlaying}>
                 <FileDrawer show={props.ide.sidebarIsExpanded}>
                   <button
                     data-backdrop="filedrawer"
@@ -322,10 +333,6 @@ const IDEViewV2 = (props) => {
     </RootPage>
   );
 };
-
-const NavItem = styled.li`
-  position: relative;
-`;
 
 IDEViewV2.propTypes = {
   params: PropTypes.shape({
