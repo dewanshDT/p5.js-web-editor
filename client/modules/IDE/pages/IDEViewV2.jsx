@@ -9,7 +9,6 @@ import { useTranslation, withTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet';
 import SplitPane from 'react-split-pane';
 import MediaQuery from 'react-responsive';
-import styled from 'styled-components';
 import Editor from '../components/Editor';
 import IDEKeyHandlers from '../components/IDEKeyHandlers';
 import Sidebar from '../components/Sidebar';
