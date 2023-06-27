@@ -58,7 +58,7 @@ export const FileDrawer = styled.div`
   display: ${(props) => (props.show ? 'flex' : 'none')};
   flex-direction: column;
   position: absolute;
-  z-index: 10;
+  /* z-index: 10; */
   background: ${prop('backgroundColor')};
 
   > button[data-backdrop='filedrawer'] {

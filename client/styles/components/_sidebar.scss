@@ -38,7 +38,7 @@
 
 .sidebar__file-list {
   @include themify() {
-    border-color: getThemifyVariable('ide-border-color')
+    border-color: getThemifyVariable("ide-border-color");
   }
   border-top: 1px solid;
   .sidebar--contracted & {
@@ -49,24 +49,33 @@
 .sidebar__root-item {
   position: relative;
   overflow-y: auto;
-  flex: 1 1 auto;
-  @include themify() {
-    border-top: 1px solid map-get($theme-map, 'ide-border-color');
+  display: flex;
+  flex-direction: column;
+
+  @media (min-width: 770px) {
+    @include themify() {
+      border-top: 1px solid map-get($theme-map, "ide-border-color");
+    }
   }
+
+  > ul {
+    width: 100%;
+  }
+
   .sidebar--contracted & {
     border: none;
   }
 }
 
 .sidebar__file-item {
-  font-size: #{12 / $base-font-size}rem;
   cursor: pointer;
   position: relative;
+
   @include themify() {
-    color: map-get($theme-map, 'primary-text-color');
+    color: map-get($theme-map, "primary-text-color");
     // TODO get this to not affect parent, need to move it into JS
     &:hover:not(.sidebar__file-item--selected) > .file-item__content {
-      background-color: map-get($theme-map, 'file-hover-color');
+      background-color: map-get($theme-map, "file-hover-color");
     }
   }
 }
@@ -100,9 +109,12 @@
 .file-item__content {
   display: flex;
   position: relative;
+  padding: #{3 / $base-font-size}rem 0;
+  align-items: center;
+
   .sidebar__file-item--selected > & {
     @include themify() {
-      background-color: map-get($theme-map, 'file-selected-color');
+      background-color: map-get($theme-map, "file-selected-color");
     }
   }
   .sidebar--contracted & {
@@ -131,7 +143,7 @@
   padding: #{4 / $base-font-size}rem 0;
   padding-right: #{25 / $base-font-size}rem;
   font-family: Inconsolata, monospace;
-  font-size: #{14 / $base-font-size}rem;
+  font-size: #{16 / $base-font-size}rem;
   overflow: hidden;
   .sidebar__file-item--editing & {
     display: none;
@@ -142,11 +154,11 @@
     right: 0;
     bottom: 0;
     left: 0;
-    content: '';
+    content: "";
     width: 100%;
   }
   @include themify() {
-    color: map-get($theme-map, 'primary-text-color');
+    color: map-get($theme-map, "primary-text-color");
   }
 }
 
@@ -216,12 +228,14 @@
   align-items: center;
   @include themify() {
     background-color: getThemifyVariable("toolbar-button-background-color");
-    & polygon, & path {
+    & polygon,
+    & path {
       fill: getThemifyVariable("toolbar-button-color");
     }
     &:hover {
       background-color: getThemifyVariable("button-background-hover-color");
-      & polygon, & path {
+      & polygon,
+      & path {
         fill: getThemifyVariable("button-hover-color");
       }
     }
@@ -261,7 +275,7 @@
   margin-right: #{5 / $base-font-size}rem;
   & path {
     @include themify() {
-      fill: map-get($theme-map, 'primary-text-color');
+      fill: map-get($theme-map, "primary-text-color");
     }
   }
   & svg {
@@ -272,9 +286,13 @@
 .sidebar__file-item-icon {
   padding: #{4 / $base-font-size}rem 0;
   margin-right: #{5 / $base-font-size}rem;
+  & svg {
+    height: #{17 / $base-font-size}rem;
+    width: #{17 / $base-font-size}rem;
+  }
   & path {
     @include themify() {
-      fill: getThemifyVariable('secondary-text-color');
+      fill: getThemifyVariable("secondary-text-color");
     }
   }
   background-color: transparent;

@@ -4,7 +4,7 @@ import {
   unstable_useBlocker as useBlocker,
   useLocation
 } from 'react-router-dom';
-import { connect, useSelector } from 'react-redux';
+import { connect, useDispatch, useSelector } from 'react-redux';
 import { useTranslation, withTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet';
 import SplitPane from 'react-split-pane';
@@ -16,7 +16,12 @@ import PreviewFrame from '../components/PreviewFrame';
 import Console from '../components/Console';
 import Toast from '../components/Toast';
 import { updateFileContent } from '../actions/files';
-import { setPreviousPath, stopSketch, collapseSidebar } from '../actions/ide';
+import {
+  setPreviousPath,
+  stopSketch,
+  collapseSidebar,
+  newFile
+} from '../actions/ide';
 import {
   autosaveProject,
   clearPersistedState,
@@ -92,6 +97,7 @@ const IDEViewV2 = (props) => {
   );
   const rootFile = useSelector(selectRootFile);
   const canEditProject = useSelector(selectCanEditSketch);
+  const dispatch = useDispatch();
 
   // const [cmController, setCmController] = useState(null);
   let cmController = null;
@@ -294,7 +300,7 @@ const IDEViewV2 = (props) => {
                   style={{ position: 'static' }}
                   split="horizontal"
                   primary="second"
-                  size={50}
+                  minSize={200}
                 >
                   <PreviewFrame
                     fullView
@@ -314,7 +320,12 @@ const IDEViewV2 = (props) => {
                   </button>
                   <nav>
                     <h4>Sketch Files</h4>
-                    <IconButton icon={PlusIcon} />
+                    <IconButton
+                      onClick={() => {
+                        dispatch(newFile(rootFile.id));
+                      }}
+                      icon={PlusIcon}
+                    />
                   </nav>
                   <ConnectedFileNode id={rootFile.id} canEit={canEditProject} />
                 </FileDrawer>

@@ -18,6 +18,8 @@ const Nav = styled.div`
   display: flex;
   align-items: center;
   font-size: ${remSize(10)};
+  box-shadow: #00000030 0px 2px 8px 0px;
+  z-index: 10;
 `;
 
 const LogoContainer = styled.div`
@@ -75,7 +77,7 @@ const Options = styled.div`
       ${prop('MobilePanel.default')}
       position: absolute;
       overflow: hidden;
-      z-index: 2;
+      z-index: 10;
       right: 10px;
       transform: translateX(${remSize(6)});
       width: max-content;
@@ -139,7 +141,6 @@ const MobileNav = () => {
   const project = useSelector((state) => state.project);
   const user = useSelector((state) => state.user);
   const navigate = useNavigate();
-  console.log(user.authenticated);
 
   const Logo = AstriskIcon;
   return (
