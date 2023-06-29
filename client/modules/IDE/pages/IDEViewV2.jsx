@@ -89,31 +89,32 @@ function WarnIfUnsavedChanges() {
 }
 
 const IDEViewV2 = (props) => {
+  const ide = useSelector((state) => state.ide);
   const [consoleSize, setConsoleSize] = useState(
-    props.ide.consoleIsExpanded ? 150 : 29
+    ide.consoleIsExpanded ? 150 : 29
   );
   const [sidebarSize, setSidebarSize] = useState(
-    props.ide.sidebarIsExpanded ? 160 : 20
+    ide.sidebarIsExpanded ? 160 : 20
   );
   const rootFile = useSelector(selectRootFile);
   const canEditProject = useSelector(selectCanEditSketch);
   const dispatch = useDispatch();
 
-  // const [cmController, setCmController] = useState(null);
   let cmController = null;
   let overlay = null;
+
   const autosaveIntervalRef = useRef(null);
   const prevPropsRef = useRef({
     selectedFileName: props.selectedFile.name,
     selectedFileContent: props.selectedFile.content,
     location: props.location,
-    sidebarIsExpanded: props.ide.sidebarIsExpanded,
+    sidebarIsExpanded: ide.sidebarSize,
     project_id: props.params.project_id
   });
 
   const handleBeforeUnload = (e) => {
     const confirmationMessage = props.t('Nav.WarningUnsavedChanges');
-    if (props.ide.unsavedChanges) {
+    if (ide.unsavedChanges) {
       (e || window.event).returnValue = confirmationMessage;
       return confirmationMessage;
     }
@@ -150,15 +151,24 @@ const IDEViewV2 = (props) => {
     if (props.location !== prevPropsRef.current.location) {
       props.setPreviousPath(prevPropsRef.current.location.pathname);
     }
-    if (
-      props.ide.sidebarIsExpanded !== prevPropsRef.current.sidebarIsExpanded
-    ) {
-      setSidebarSize(props.ide.sidebarIsExpanded ? 160 : 20);
-    }
 
     prevPropsRef.current.location = props.location;
-    prevPropsRef.current.sidebarIsExpanded = props.ide.sidebarIsExpanded;
-  }, [props.location, props.ide, props.setPreviousPath]);
+  }, [props.location, props.setPreviousPath]);
+
+  // for the sidebar size behaviour
+  useEffect(() => {
+    if (!ide.sidebarIsExpanded) {
+      prevPropsRef.current.sidebarSize = sidebarSize;
+      setSidebarSize(20);
+    }
+    if (ide.sidebarIsExpanded) {
+      setSidebarSize(
+        prevPropsRef.current.sidebarSize
+          ? prevPropsRef.current.sidebarSize
+          : 160
+      );
+    }
+  }, [ide.sidebarIsExpanded]);
 
   useEffect(() => {
     if (props.params.project_id && !prevPropsRef.current.project_id) {
@@ -171,7 +181,7 @@ const IDEViewV2 = (props) => {
   }, [props.params.project_id, props.project.id, props.getProject]);
 
   useEffect(() => {
-    const { isUserOwner, project, preferences, ide, selectedFile } = props;
+    const { isUserOwner, project, preferences, selectedFile } = props;
     if (
       isUserOwner &&
       project.id &&
@@ -206,8 +216,8 @@ const IDEViewV2 = (props) => {
     props.isUserOwner,
     props.project.id,
     props.preferences.autosave,
-    props.ide.unsavedChanges,
-    props.ide.justOpenedProject,
+    ide.unsavedChanges,
+    ide.justOpenedProject,
     props.selectedFile.name,
     props.selectedFile.content,
     props.autosaveProject
@@ -229,9 +239,11 @@ const IDEViewV2 = (props) => {
               <SplitPane
                 split="vertical"
                 size={sidebarSize}
-                onChange={(size) => setSidebarSize(size)}
+                onChange={(size) => {
+                  setSidebarSize(size);
+                }}
                 //   onDragFinished={this._handleSidebarPaneOnDragFinished}
-                allowResize={props.ide.sidebarIsExpanded}
+                allowResize={ide.sidebarIsExpanded}
                 minSize={125}
               >
                 <Sidebar />
@@ -254,10 +266,10 @@ const IDEViewV2 = (props) => {
                   <SplitPane
                     split="horizontal"
                     primary="second"
-                    size={props.ide.consoleIsExpanded ? consoleSize : 29}
+                    size={ide.consoleIsExpanded ? consoleSize : 29}
                     minSize={29}
                     onChange={(size) => setConsoleSize(size)}
-                    allowResize={props.ide.consoleIsExpanded}
+                    allowResize={ide.consoleIsExpanded}
                     className="editor-preview-subpanel"
                   >
                     <Editor
@@ -283,8 +295,8 @@ const IDEViewV2 = (props) => {
                       <div>
                         {((props.preferences.textOutput ||
                           props.preferences.gridOutput) &&
-                          props.ide.isPlaying) ||
-                          props.ide.isAccessibleOutputPlaying}
+                          ide.isPlaying) ||
+                          ide.isAccessibleOutputPlaying}
                       </div>
                       <PreviewFrame cmController={cmController} />
                     </div>
@@ -295,7 +307,7 @@ const IDEViewV2 = (props) => {
           ) : (
             <>
               <FloatingActionButton syncFileContent={syncFileContent} />
-              <PreviewWrapper show={props.ide.isPlaying}>
+              <PreviewWrapper show={ide.isPlaying}>
                 <SplitPane
                   style={{ position: 'static' }}
                   split="horizontal"
@@ -304,14 +316,14 @@ const IDEViewV2 = (props) => {
                 >
                   <PreviewFrame
                     fullView
-                    hide={!props.ide.isPlaying}
+                    hide={!ide.isPlaying}
                     cmController={cmController}
                   />
                   <Console />
                 </SplitPane>
               </PreviewWrapper>
-              <EditorSidebarWrapper show={!props.ide.isPlaying}>
-                <FileDrawer show={props.ide.sidebarIsExpanded}>
+              <EditorSidebarWrapper show={!ide.isPlaying}>
+                <FileDrawer show={ide.sidebarIsExpanded}>
                   <button
                     data-backdrop="filedrawer"
                     onClick={props.collapseSidebar}
