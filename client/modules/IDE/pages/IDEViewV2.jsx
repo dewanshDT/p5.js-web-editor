@@ -4,8 +4,8 @@ import {
   unstable_useBlocker as useBlocker,
   useLocation
 } from 'react-router-dom';
-import { connect, useDispatch, useSelector } from 'react-redux';
-import { useTranslation, withTranslation } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet';
 import SplitPane from 'react-split-pane';
 import MediaQuery from 'react-responsive';
@@ -43,9 +43,9 @@ import IconButton from '../../../components/mobile/IconButton';
 import { PlusIcon } from '../../../common/icons';
 import ConnectedFileNode from '../components/FileNode';
 
-function getTitle(props) {
-  const { id } = props.project;
-  return id ? `p5.js Web Editor | ${props.project.name}` : 'p5.js Web Editor';
+function getTitle(project) {
+  const { id } = project;
+  return id ? `p5.js Web Editor | ${project.name}` : 'p5.js Web Editor';
 }
 
 function isAuth(pathname) {
@@ -90,6 +90,13 @@ function WarnIfUnsavedChanges() {
 
 const IDEViewV2 = (props) => {
   const ide = useSelector((state) => state.ide);
+  const selectedFile = useSelector(selectActiveFile);
+  const preferences = useSelector((state) => state.preferences);
+  const project = useSelector((state) => state.project);
+  const isUserOwner = useSelector(getIsUserOwner);
+  const dispatch = useDispatch();
+  const { t } = useTranslation();
+
   const [consoleSize, setConsoleSize] = useState(
     ide.consoleIsExpanded ? 150 : 29
   );
@@ -98,22 +105,21 @@ const IDEViewV2 = (props) => {
   );
   const rootFile = useSelector(selectRootFile);
   const canEditProject = useSelector(selectCanEditSketch);
-  const dispatch = useDispatch();
 
   let cmController = null;
   let overlay = null;
 
   const autosaveIntervalRef = useRef(null);
   const prevPropsRef = useRef({
-    selectedFileName: props.selectedFile.name,
-    selectedFileContent: props.selectedFile.content,
+    selectedFileName: selectedFile.name,
+    selectedFileContent: selectedFile.content,
     location: props.location,
     sidebarIsExpanded: ide.sidebarSize,
     project_id: props.params.project_id
   });
 
   const handleBeforeUnload = (e) => {
-    const confirmationMessage = props.t('Nav.WarningUnsavedChanges');
+    const confirmationMessage = t('Nav.WarningUnsavedChanges');
     if (ide.unsavedChanges) {
       (e || window.event).returnValue = confirmationMessage;
       return confirmationMessage;
@@ -123,17 +129,17 @@ const IDEViewV2 = (props) => {
 
   const syncFileContent = () => {
     const file = cmController.getContent();
-    props.updateFileContent(file.id, file.content);
+    dispatch(updateFileContent(file.id, file.content));
   };
 
   useEffect(() => {
-    props.clearPersistedState();
+    dispatch(clearPersistedState());
 
-    props.stopSketch();
+    dispatch(stopSketch());
     if (props.params.project_id) {
       const { project_id: id, username } = props.params;
-      if (id !== props.project.id) {
-        props.getProject(id, username);
+      if (id !== project.id) {
+        dispatch(getProject(id, username));
       }
     }
 
@@ -147,13 +153,14 @@ const IDEViewV2 = (props) => {
     };
   }, []);
 
+  // for setting previous location
   useEffect(() => {
     if (props.location !== prevPropsRef.current.location) {
-      props.setPreviousPath(prevPropsRef.current.location.pathname);
+      dispatch(setPreviousPath(prevPropsRef.current.location.pathname));
     }
 
     prevPropsRef.current.location = props.location;
-  }, [props.location, props.setPreviousPath]);
+  }, [props.location]);
 
   // for the sidebar size behaviour
   useEffect(() => {
@@ -163,25 +170,15 @@ const IDEViewV2 = (props) => {
     }
     if (ide.sidebarIsExpanded) {
       setSidebarSize(
-        prevPropsRef.current.sidebarSize
+        prevPropsRef.current.sidebarSize > 160
           ? prevPropsRef.current.sidebarSize
           : 160
       );
     }
   }, [ide.sidebarIsExpanded]);
 
+  // For autosave
   useEffect(() => {
-    if (props.params.project_id && !prevPropsRef.current.project_id) {
-      if (props.params.project_id !== props.project.id) {
-        props.getProject(props.params.project_id);
-      }
-    }
-
-    prevPropsRef.current.project_id = props.params.project_id;
-  }, [props.params.project_id, props.project.id, props.getProject]);
-
-  useEffect(() => {
-    const { isUserOwner, project, preferences, selectedFile } = props;
     if (
       isUserOwner &&
       project.id &&
@@ -196,7 +193,10 @@ const IDEViewV2 = (props) => {
         if (autosaveIntervalRef.current) {
           clearTimeout(autosaveIntervalRef.current);
         }
-        autosaveIntervalRef.current = setTimeout(autosaveProject, 20000);
+        autosaveIntervalRef.current = setTimeout(
+          dispatch(autosaveProject()),
+          20000
+        );
       }
     } else if (autosaveIntervalRef.current && !preferences.autosave) {
       clearTimeout(autosaveIntervalRef.current);
@@ -213,20 +213,19 @@ const IDEViewV2 = (props) => {
       }
     };
   }, [
-    props.isUserOwner,
-    props.project.id,
-    props.preferences.autosave,
+    isUserOwner,
+    project.id,
+    preferences.autosave,
     ide.unsavedChanges,
     ide.justOpenedProject,
-    props.selectedFile.name,
-    props.selectedFile.content,
-    props.autosaveProject
+    selectedFile.name,
+    selectedFile.content
   ]);
 
   return (
     <RootPage>
       <Helmet>
-        <title>{getTitle(props)}</title>
+        <title>{getTitle(project)}</title>
       </Helmet>
       <IDEKeyHandlers getContent={() => cmController.getContent()} />
       <WarnIfUnsavedChanges />
@@ -242,7 +241,6 @@ const IDEViewV2 = (props) => {
                 onChange={(size) => {
                   setSidebarSize(size);
                 }}
-                //   onDragFinished={this._handleSidebarPaneOnDragFinished}
                 allowResize={ide.sidebarIsExpanded}
                 minSize={125}
               >
@@ -282,7 +280,7 @@ const IDEViewV2 = (props) => {
                   <section className="preview-frame-holder">
                     <header className="preview-frame__header">
                       <h2 className="preview-frame__title">
-                        {props.t('Toolbar.Preview')}
+                        {t('Toolbar.Preview')}
                       </h2>
                     </header>
                     <div className="preview-frame__content">
@@ -293,8 +291,7 @@ const IDEViewV2 = (props) => {
                         }}
                       />
                       <div>
-                        {((props.preferences.textOutput ||
-                          props.preferences.gridOutput) &&
+                        {((preferences.textOutput || preferences.gridOutput) &&
                           ide.isPlaying) ||
                           ide.isAccessibleOutputPlaying}
                       </div>
@@ -326,7 +323,9 @@ const IDEViewV2 = (props) => {
                 <FileDrawer show={ide.sidebarIsExpanded}>
                   <button
                     data-backdrop="filedrawer"
-                    onClick={props.collapseSidebar}
+                    onClick={() => {
+                      dispatch(collapseSidebar());
+                    }}
                   >
                     {' '}
                   </button>
@@ -364,77 +363,7 @@ IDEViewV2.propTypes = {
   }).isRequired,
   location: PropTypes.shape({
     pathname: PropTypes.string
-  }).isRequired,
-  getProject: PropTypes.func.isRequired,
-  user: PropTypes.shape({
-    authenticated: PropTypes.bool.isRequired,
-    id: PropTypes.string,
-    username: PropTypes.string
-  }).isRequired,
-  ide: PropTypes.shape({
-    isPlaying: PropTypes.bool.isRequired,
-    isAccessibleOutputPlaying: PropTypes.bool.isRequired,
-    projectOptionsVisible: PropTypes.bool.isRequired,
-    justOpenedProject: PropTypes.bool.isRequired,
-    sidebarIsExpanded: PropTypes.bool.isRequired,
-    consoleIsExpanded: PropTypes.bool.isRequired,
-    unsavedChanges: PropTypes.bool.isRequired
-  }).isRequired,
-  stopSketch: PropTypes.func.isRequired,
-  collapseSidebar: PropTypes.func.isRequired,
-  project: PropTypes.shape({
-    id: PropTypes.string,
-    name: PropTypes.string.isRequired,
-    owner: PropTypes.shape({
-      username: PropTypes.string,
-      id: PropTypes.string
-    }),
-    updatedAt: PropTypes.string
-  }).isRequired,
-  preferences: PropTypes.shape({
-    autosave: PropTypes.bool.isRequired,
-    textOutput: PropTypes.bool.isRequired,
-    gridOutput: PropTypes.bool.isRequired,
-    theme: PropTypes.string.isRequired,
-    autorefresh: PropTypes.bool.isRequired,
-    language: PropTypes.string.isRequired,
-    autocloseBracketsQuotes: PropTypes.bool.isRequired,
-    autocompleteHinter: PropTypes.bool.isRequired
-  }).isRequired,
-  selectedFile: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    content: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired
-  }).isRequired,
-  updateFileContent: PropTypes.func.isRequired,
-  autosaveProject: PropTypes.func.isRequired,
-  setPreviousPath: PropTypes.func.isRequired,
-  clearPersistedState: PropTypes.func.isRequired,
-  t: PropTypes.func.isRequired,
-  isUserOwner: PropTypes.bool.isRequired
+  }).isRequired
 };
 
-function mapStateToProps(state) {
-  return {
-    selectedFile: selectActiveFile(state),
-    ide: state.ide,
-    preferences: state.preferences,
-    user: state.user,
-    project: state.project,
-    isUserOwner: getIsUserOwner(state)
-  };
-}
-
-const mapDispatchToProps = {
-  autosaveProject,
-  clearPersistedState,
-  getProject,
-  setPreviousPath,
-  stopSketch,
-  updateFileContent,
-  collapseSidebar
-};
-
-export default withTranslation()(
-  connect(mapStateToProps, mapDispatchToProps)(IDEViewV2)
-);
+export default IDEViewV2;
