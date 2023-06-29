@@ -3,12 +3,15 @@ import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
+import PropTypes from 'prop-types';
 import { prop, remSize } from '../../../../theme';
 import AstriskIcon from '../../../../images/p5-asterisk.svg';
 import IconButton from '../../../../components/mobile/IconButton';
 import { AccountIcon, MoreIcon } from '../../../../common/icons';
-import { openPreferences } from '../../actions/ide';
+import { newFile, newFolder, openPreferences } from '../../actions/ide';
 import { logoutUser } from '../../../User/actions';
+import { useSketchActions } from '../../hooks';
+import { selectRootFile } from '../../selectors/files';
 
 const Nav = styled.div`
   background: ${prop('MobilePanel.default.background')};
@@ -137,7 +140,7 @@ const Options = styled.div`
   }
 `;
 
-const MobileNav = () => {
+const MobileNav = (props) => {
   const project = useSelector((state) => state.project);
   const user = useSelector((state) => state.user);
   const navigate = useNavigate();
@@ -165,7 +168,7 @@ const MobileNav = () => {
             />
           </div>
         )}
-        <MoreMenu />
+        <MoreMenu cmController={props.cmController} />
       </Options>
     </Nav>
   );
@@ -191,7 +194,13 @@ const AccoutnMenu = () => {
           </button>
         </li>
         <li>
-          <button>Settings</button>
+          <button
+            onClick={() => {
+              navigate(`/${user.username}/account`);
+            }}
+          >
+            Settings
+          </button>
         </li>
         <li>
           <button onClick={() => dispatch(logoutUser())}>Log Out</button>
@@ -201,9 +210,12 @@ const AccoutnMenu = () => {
   );
 };
 
-const MoreMenu = () => {
+const MoreMenu = ({ cmController }) => {
+  const rootFile = useSelector(selectRootFile);
   const dispatch = useDispatch();
   const { t } = useTranslation();
+  const { newSketch, saveSketch } = useSketchActions();
+  const navigate = useNavigate();
 
   return (
     <div>
@@ -211,27 +223,41 @@ const MoreMenu = () => {
       <ul>
         <b>{t('Nav.File.Title')}</b>
         <li>
-          <button>{t('Nav.File.New')}</button>
+          <button onClick={newSketch}>{t('Nav.File.New')}</button>
         </li>
         <li>
-          <button>{t('Common.Save')}</button>
+          <button onClick={() => saveSketch(cmController)}>
+            {t('Common.Save')}
+          </button>
         </li>
         <li>
-          <button>{t('Nav.File.Examples')}</button>
+          <button
+            onClick={() => {
+              navigate(`/p5/sketches`);
+            }}
+          >
+            {t('Nav.File.Examples')}
+          </button>
         </li>
         <b>{t('Nav.Edit.Title')}</b>
         <li>
-          <button>{t('Nav.Edit.TidyCode')}</button>
+          <button onClick={cmController?.tidyCode}>
+            {t('Nav.Edit.TidyCode')}
+          </button>
         </li>
         <li>
-          <button>{t('Nav.Edit.Find')}</button>
+          <button onClick={cmController?.showFind}>{t('Nav.Edit.Find')}</button>
         </li>
         <b>{t('Nav.Sketch.Title')}</b>
         <li>
-          <button>{t('Nav.Sketch.AddFile')}</button>
+          <button onClick={() => dispatch(newFile(rootFile.id))}>
+            {t('Nav.Sketch.AddFile')}
+          </button>
         </li>
         <li>
-          <button>{t('Nav.Sketch.AddFolder')}</button>
+          <button onClick={() => dispatch(newFolder(rootFile.id))}>
+            {t('Nav.Sketch.AddFolder')}
+          </button>
         </li>
         {/* TODO: Add Translations */}
         <b>Settings</b>
@@ -252,14 +278,52 @@ const MoreMenu = () => {
           <button>{t('Nav.Help.KeyboardShortcuts')}</button>
         </li>
         <li>
-          <button>{t('Nav.Help.Reference')}</button>
+          <button
+            onClick={() => {
+              window.location = 'https://p5js.org/reference/';
+            }}
+          >
+            {t('Nav.Help.Reference')}
+          </button>
         </li>
         <li>
-          <button>{t('Nav.Help.About')}</button>
+          <button
+            onClick={() => {
+              navigate(`/about`);
+            }}
+          >
+            {t('Nav.Help.About')}
+          </button>
         </li>
       </ul>
     </div>
   );
+};
+
+MoreMenu.propTypes = {
+  cmController: PropTypes.shape({
+    tidyCode: PropTypes.func,
+    showFind: PropTypes.func,
+    showReplace: PropTypes.func,
+    getContent: PropTypes.func
+  })
+};
+
+MoreMenu.defaultProps = {
+  cmController: {}
+};
+
+MobileNav.propTypes = {
+  cmController: PropTypes.shape({
+    tidyCode: PropTypes.func,
+    showFind: PropTypes.func,
+    showReplace: PropTypes.func,
+    getContent: PropTypes.func
+  })
+};
+
+MobileNav.defaultProps = {
+  cmController: {}
 };
 
 export default MobileNav;

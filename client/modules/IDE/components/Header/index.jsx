@@ -18,7 +18,7 @@ const Header = (props) => {
             <Toolbar syncFileContent={props.syncFileContent} key={project.id} />
           </>
         ) : (
-          <MobileNav />
+          <MobileNav cmController={props.cmController} />
         )
       }
     </MediaQuery>
