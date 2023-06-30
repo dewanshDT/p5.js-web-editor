@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { sortBy } from 'lodash';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import NavDropdownMenu from '../../../../components/Nav/NavDropdownMenu';
@@ -17,16 +17,11 @@ import { selectSketchPath } from '../../selectors/project';
 import { metaKey, metaKeyName } from '../../../../utils/metaKey';
 import { useSketchActions } from '../../hooks';
 import { getIsUserOwner } from '../../selectors/users';
-import {
-  autosaveProject,
-  cloneProject,
-  exportProjectAsZip
-} from '../../actions/project';
+import { cloneProject } from '../../actions/project';
 import {
   newFile,
   newFolder,
   showKeyboardShortcutModal,
-  showShareModal,
   startSketch,
   stopSketch
 } from '../../actions/ide';
@@ -34,16 +29,12 @@ import { selectRootFile } from '../../selectors/files';
 import { logoutUser } from '../../../User/actions';
 import { CmControllerContext } from '../../pages/IDEViewV2';
 
-const NavV2 = ({ layout }) => {
-  const dispatch = useDispatch();
-
-  return (
-    <NavBar>
-      <LeftLayout layout={layout} />
-      <UserMenu />
-    </NavBar>
-  );
-};
+const NavV2 = ({ layout }) => (
+  <NavBar>
+    <LeftLayout layout={layout} />
+    <UserMenu />
+  </NavBar>
+);
 
 NavV2.propTypes = {
   layout: PropTypes.oneOf(['dashboard', 'project'])

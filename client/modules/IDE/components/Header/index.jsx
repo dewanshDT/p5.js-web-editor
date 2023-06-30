@@ -2,9 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import MediaQuery from 'react-responsive';
-import Toolbar from './Toolbar';
 import MobileNav from './MobileNav';
 import NavV2 from './NavV2';
+import ToolbarV2 from './ToolbarV2';
 
 const Header = (props) => {
   const project = useSelector((state) => state.project);
@@ -15,7 +15,10 @@ const Header = (props) => {
         matches ? (
           <>
             <NavV2 />
-            <Toolbar syncFileContent={props.syncFileContent} key={project.id} />
+            <ToolbarV2
+              syncFileContent={props.syncFileContent}
+              key={project.id}
+            />
           </>
         ) : (
           <MobileNav />
