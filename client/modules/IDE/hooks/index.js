@@ -2,8 +2,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   autosaveProject,
   exportProjectAsZip,
+  hideEditProjectName,
   newProject,
-  saveProject
+  saveProject,
+  setProjectName
 } from '../actions/project';
 import { useTranslation } from 'react-i18next';
 import { showToast } from '../actions/toast';
@@ -14,6 +16,7 @@ export const useSketchActions = () => {
   const unsavedChanges = useSelector((state) => state.ide.unsavedChanges);
   const authenticated = useSelector((state) => state.user.authenticated);
   const project = useSelector((state) => state.project);
+  const currentUser = useSelector((state) => state.user.username);
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const params = useParams();
@@ -46,5 +49,30 @@ export const useSketchActions = () => {
     dispatch(showShareModal(project.id, project.name, username));
   }
 
-  return { newSketch, saveSketch, downloadSketch, shareSketch };
+  function changeSketchName(name) {
+    const newProjectName = name.trim();
+    if (newProjectName.length > 0) {
+      dispatch(setProjectName(newProjectName));
+      if (project.id) dispatch(saveProject());
+    }
+  }
+
+  function canEditProjectName() {
+    return (
+      (project.owner &&
+        project.owner.username &&
+        project.owner.username === currentUser) ||
+      !project.owner ||
+      !project.owner.username
+    );
+  }
+
+  return {
+    newSketch,
+    saveSketch,
+    downloadSketch,
+    shareSketch,
+    changeSketchName,
+    canEditProjectName
+  };
 };
