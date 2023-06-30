@@ -1,14 +1,22 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { newProject, saveProject } from '../actions/project';
+import {
+  autosaveProject,
+  exportProjectAsZip,
+  newProject,
+  saveProject
+} from '../actions/project';
 import { useTranslation } from 'react-i18next';
 import { showToast } from '../actions/toast';
-import { showErrorModal } from '../actions/ide';
+import { showErrorModal, showShareModal } from '../actions/ide';
+import { useParams } from 'react-router';
 
 export const useSketchActions = () => {
   const unsavedChanges = useSelector((state) => state.ide.unsavedChanges);
   const authenticated = useSelector((state) => state.user.authenticated);
+  const project = useSelector((state) => state.project);
   const dispatch = useDispatch();
   const { t } = useTranslation();
+  const params = useParams();
 
   function newSketch() {
     if (!unsavedChanges) {
@@ -28,5 +36,15 @@ export const useSketchActions = () => {
     }
   }
 
-  return { newSketch, saveSketch };
+  function downloadSketch() {
+    dispatch(autosaveProject());
+    dispatch(exportProjectAsZip(project.id));
+  }
+
+  function shareSketch() {
+    const { username } = params;
+    dispatch(showShareModal(project.id, project.name, username));
+  }
+
+  return { newSketch, saveSketch, downloadSketch, shareSketch };
 };

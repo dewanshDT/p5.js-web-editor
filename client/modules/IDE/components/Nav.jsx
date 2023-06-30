@@ -4,25 +4,25 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
-import { availableLanguages, languageKeyToLabel } from '../../../../i18n';
-import * as IDEActions from '../../actions/ide';
-import * as toastActions from '../../actions/toast';
-import * as projectActions from '../../actions/project';
-import { setAllAccessibleOutput, setLanguage } from '../../actions/preferences';
-import { selectRootFile } from '../../selectors/files';
-import { logoutUser } from '../../../User/actions';
+import { availableLanguages, languageKeyToLabel } from '../../../i18n';
+import * as IDEActions from '../actions/ide';
+import * as toastActions from '../actions/toast';
+import * as projectActions from '../actions/project';
+import { setAllAccessibleOutput, setLanguage } from '../actions/preferences';
+import { selectRootFile } from '../selectors/files';
+import { logoutUser } from '../../User/actions';
 
-import getConfig from '../../../../utils/getConfig';
-import { metaKeyName, metaKey } from '../../../../utils/metaKey';
-import { withRouter } from '../../../../utils/router-compatibilty';
-import { getIsUserOwner } from '../../selectors/users';
-import { selectSketchPath } from '../../selectors/project';
+import getConfig from '../../../utils/getConfig';
+import { metaKeyName, metaKey } from '../../../utils/metaKey';
+import { withRouter } from '../../../utils/router-compatibilty';
+import { getIsUserOwner } from '../selectors/users';
+import { selectSketchPath } from '../selectors/project';
 
-import CaretLeftIcon from '../../../../images/left-arrow.svg';
-import LogoIcon from '../../../../images/p5js-logo-small.svg';
-import NavDropdownMenu from '../../../../components/Nav/NavDropdownMenu';
-import NavMenuItem from '../../../../components/Nav/NavMenuItem';
-import NavBar from '../../../../components/Nav/NavBar';
+import CaretLeftIcon from '../../../images/left-arrow.svg';
+import LogoIcon from '../../../images/p5js-logo-small.svg';
+import NavDropdownMenu from '../../../components/Nav/NavDropdownMenu';
+import NavMenuItem from '../../../components/Nav/NavMenuItem';
+import NavBar from '../../../components/Nav/NavBar';
 
 class Nav extends React.PureComponent {
   constructor(props) {
@@ -65,6 +65,7 @@ class Nav extends React.PureComponent {
 
   handleShare() {
     const { username } = this.props.params;
+    console.log(username);
     this.props.showShareModal(
       this.props.project.id,
       this.props.project.name,

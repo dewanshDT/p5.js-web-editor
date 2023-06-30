@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 import { withTranslation } from 'react-i18next';
@@ -417,7 +416,7 @@ FileNode.propTypes = {
   newFolder: PropTypes.func.isRequired,
   showFolderChildren: PropTypes.func.isRequired,
   hideFolderChildren: PropTypes.func.isRequired,
-  canEdit: PropTypes.bool.isRequired,
+  canEdit: PropTypes.bool,
   openUploadFileModal: PropTypes.func.isRequired,
   authenticated: PropTypes.bool.isRequired,
   t: PropTypes.func.isRequired,
@@ -428,7 +427,8 @@ FileNode.defaultProps = {
   onClickFile: null,
   parentId: '0',
   isSelectedFile: false,
-  isFolderClosed: false
+  isFolderClosed: false,
+  canEdit: undefined
 };
 
 function mapStateToProps(state, ownProps) {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
@@ -12,6 +12,7 @@ import { newFile, newFolder, openPreferences } from '../../actions/ide';
 import { logoutUser } from '../../../User/actions';
 import { useSketchActions } from '../../hooks';
 import { selectRootFile } from '../../selectors/files';
+import { CmControllerContext } from '../../pages/IDEViewV2';
 
 const Nav = styled.div`
   background: ${prop('MobilePanel.default.background')};
@@ -168,7 +169,7 @@ const MobileNav = (props) => {
             />
           </div>
         )}
-        <MoreMenu cmController={props.cmController} />
+        <MoreMenu />
       </Options>
     </Nav>
   );
@@ -196,7 +197,7 @@ const AccoutnMenu = () => {
         <li>
           <button
             onClick={() => {
-              navigate(`/${user.username}/account`);
+              navigate(`/account`);
             }}
           >
             Settings
@@ -210,12 +211,14 @@ const AccoutnMenu = () => {
   );
 };
 
-const MoreMenu = ({ cmController }) => {
+const MoreMenu = () => {
   const rootFile = useSelector(selectRootFile);
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const { newSketch, saveSketch } = useSketchActions();
   const navigate = useNavigate();
+
+  const cmRef = useContext(CmControllerContext);
 
   return (
     <div>
@@ -226,7 +229,7 @@ const MoreMenu = ({ cmController }) => {
           <button onClick={newSketch}>{t('Nav.File.New')}</button>
         </li>
         <li>
-          <button onClick={() => saveSketch(cmController)}>
+          <button onClick={() => saveSketch(cmRef.current)}>
             {t('Common.Save')}
           </button>
         </li>
@@ -241,12 +244,14 @@ const MoreMenu = ({ cmController }) => {
         </li>
         <b>{t('Nav.Edit.Title')}</b>
         <li>
-          <button onClick={cmController?.tidyCode}>
+          <button onClick={cmRef.current?.tidyCode}>
             {t('Nav.Edit.TidyCode')}
           </button>
         </li>
         <li>
-          <button onClick={cmController?.showFind}>{t('Nav.Edit.Find')}</button>
+          <button onClick={cmRef.current?.showFind}>
+            {t('Nav.Edit.Find')}
+          </button>
         </li>
         <b>{t('Nav.Sketch.Title')}</b>
         <li>

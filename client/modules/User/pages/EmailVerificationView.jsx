@@ -6,7 +6,7 @@ import { withTranslation } from 'react-i18next';
 import get from 'lodash/get';
 import { Helmet } from 'react-helmet';
 import { verifyEmailConfirmation } from '../actions';
-import Nav from '../../IDE/components/Header/Nav';
+import Nav from '../../IDE/components/Nav';
 import RootPage from '../../../components/RootPage';
 
 class EmailVerificationView extends React.Component {

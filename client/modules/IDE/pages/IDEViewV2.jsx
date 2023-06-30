@@ -88,6 +88,8 @@ function WarnIfUnsavedChanges() {
   return null;
 }
 
+export const CmControllerContext = React.createContext({});
+
 const IDEViewV2 = (props) => {
   const ide = useSelector((state) => state.ide);
   const selectedFile = useSelector(selectActiveFile);
@@ -106,7 +108,7 @@ const IDEViewV2 = (props) => {
   const rootFile = useSelector(selectRootFile);
   const canEditProject = useSelector(selectCanEditSketch);
 
-  let cmController = null;
+  const cmRef = useRef({});
   let overlay = null;
 
   const autosaveIntervalRef = useRef(null);
@@ -128,7 +130,7 @@ const IDEViewV2 = (props) => {
   };
 
   const syncFileContent = () => {
-    const file = cmController.getContent();
+    const file = cmRef.current.getContent();
     dispatch(updateFileContent(file.id, file.content));
   };
 
@@ -227,10 +229,12 @@ const IDEViewV2 = (props) => {
       <Helmet>
         <title>{getTitle(project)}</title>
       </Helmet>
-      <IDEKeyHandlers getContent={() => cmController.getContent()} />
+      <IDEKeyHandlers getContent={() => cmRef.current?.getContent()} />
       <WarnIfUnsavedChanges />
       <Toast />
-      <Header cmController={cmController} syncFileContent={syncFileContent} />
+      <CmControllerContext.Provider value={cmRef}>
+        <Header syncFileContent={syncFileContent} />
+      </CmControllerContext.Provider>
       <MediaQuery minWidth={770}>
         {(matches) =>
           matches ? (
@@ -272,7 +276,7 @@ const IDEViewV2 = (props) => {
                   >
                     <Editor
                       provideController={(ctl) => {
-                        cmController = ctl;
+                        cmRef.current = ctl;
                       }}
                     />
                     <Console />
@@ -295,7 +299,7 @@ const IDEViewV2 = (props) => {
                           ide.isPlaying) ||
                           ide.isAccessibleOutputPlaying}
                       </div>
-                      <PreviewFrame cmController={cmController} />
+                      <PreviewFrame cmController={cmRef.current} />
                     </div>
                   </section>
                 </SplitPane>
@@ -314,7 +318,7 @@ const IDEViewV2 = (props) => {
                   <PreviewFrame
                     fullView
                     hide={!ide.isPlaying}
-                    cmController={cmController}
+                    cmController={cmRef.current}
                   />
                   <Console />
                 </SplitPane>
@@ -342,7 +346,7 @@ const IDEViewV2 = (props) => {
                 </FileDrawer>
                 <EditorV2
                   provideController={(ctl) => {
-                    cmController = ctl;
+                    cmRef.current = ctl;
                   }}
                 />
               </EditorSidebarWrapper>
