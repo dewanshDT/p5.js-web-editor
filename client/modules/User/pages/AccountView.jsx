@@ -10,10 +10,10 @@ import { createApiKey, removeApiKey } from '../actions';
 import AccountForm from '../components/AccountForm';
 import SocialAuthButton from '../components/SocialAuthButton';
 import APIKeyForm from '../components/APIKeyForm';
-import Nav from '../../IDE/components/Nav';
 import ErrorModal from '../../IDE/components/ErrorModal';
 import Overlay from '../../App/components/Overlay';
 import Toast from '../../IDE/components/Toast';
+import NavV2 from '../../IDE/components/Header/NavV2';
 
 function SocialLoginPanel() {
   const { t } = useTranslation();
@@ -65,7 +65,7 @@ function AccountView() {
       </Helmet>
       <Toast />
 
-      <Nav layout="dashboard" />
+      <NavV2 layout="dashboard" />
 
       {showError && (
         <Overlay

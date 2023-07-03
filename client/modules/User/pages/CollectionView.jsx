@@ -3,11 +3,11 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 
-import Nav from '../../IDE/components/Nav';
 import RootPage from '../../../components/RootPage';
 
 import CollectionCreate from '../components/CollectionCreate';
 import Collection from '../components/Collection';
+import NavV2 from '../../IDE/components/Header/NavV2';
 
 class CollectionView extends React.Component {
   static defaultProps = {
@@ -55,7 +55,7 @@ class CollectionView extends React.Component {
   render() {
     return (
       <RootPage>
-        <Nav layout="dashboard" />
+        <NavV2 layout="dashboard" />
 
         {this.renderContent()}
       </RootPage>

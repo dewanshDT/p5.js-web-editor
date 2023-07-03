@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { sortBy } from 'lodash';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import MediaQuery from 'react-responsive';
+
 import { useTranslation } from 'react-i18next';
 import NavDropdownMenu from '../../../../components/Nav/NavDropdownMenu';
 import NavMenuItem from '../../../../components/Nav/NavMenuItem';
@@ -28,12 +30,21 @@ import {
 import { selectRootFile } from '../../selectors/files';
 import { logoutUser } from '../../../User/actions';
 import { CmControllerContext } from '../../pages/IDEViewV2';
+import MobileNav from './MobileNav';
 
 const NavV2 = ({ layout }) => (
-  <NavBar>
-    <LeftLayout layout={layout} />
-    <UserMenu />
-  </NavBar>
+  <MediaQuery minWidth={770}>
+    {(matches) =>
+      matches ? (
+        <NavBar>
+          <LeftLayout layout={layout} />
+          <UserMenu />
+        </NavBar>
+      ) : (
+        <MobileNav />
+      )
+    }
+  </MediaQuery>
 );
 
 NavV2.propTypes = {
@@ -79,7 +90,7 @@ const UserMenu = () => {
 
 const DashboardMenu = () => {
   const { t } = useTranslation();
-  const editorLink = useSelector(selectSketchPath());
+  const editorLink = useSelector(selectSketchPath);
   return (
     <ul className="nav__items-left">
       <li className="nav__item-logo">
@@ -106,7 +117,7 @@ const DashboardMenu = () => {
 
 const ProjectMenu = (props) => {
   const isUserOwner = useSelector(getIsUserOwner);
-  const project = useSelector((state) => state.project);
+  const project = useSelector((state) => state?.project);
   const user = useSelector((state) => state.user);
   const rootFile = useSelector(selectRootFile);
 
@@ -135,7 +146,7 @@ const ProjectMenu = (props) => {
         <NavMenuItem onClick={newSketch}>{t('Nav.File.New')}</NavMenuItem>
         <NavMenuItem
           hideIf={
-            !getConfig('LOGIN_ENABLED') || (project.owner && !isUserOwner)
+            !getConfig('LOGIN_ENABLED') || (project?.owner && !isUserOwner)
           }
           onClick={() => saveSketch(cmRef)}
         >
@@ -143,15 +154,15 @@ const ProjectMenu = (props) => {
           <span className="nav__keyboard-shortcut">{metaKeyName}+S</span>
         </NavMenuItem>
         <NavMenuItem
-          hideIf={!project.id || !user.authenticated}
+          hideIf={!project?.id || !user.authenticated}
           onClick={() => dispatch(cloneProject())}
         >
           {t('Nav.File.Duplicate')}
         </NavMenuItem>
-        <NavMenuItem hideIf={!project.id} onClick={shareSketch}>
+        <NavMenuItem hideIf={!project?.id} onClick={shareSketch}>
           {t('Nav.File.Share')}
         </NavMenuItem>
-        <NavMenuItem hideIf={!project.id} onClick={downloadSketch}>
+        <NavMenuItem hideIf={!project?.id} onClick={downloadSketch}>
           {t('Nav.File.Download')}
         </NavMenuItem>
         <NavMenuItem
@@ -164,9 +175,9 @@ const ProjectMenu = (props) => {
           hideIf={
             !getConfig('UI_COLLECTIONS_ENABLED') ||
             !user.authenticated ||
-            !project.id
+            !project?.id
           }
-          href={`/${user.username}/sketches/${project.id}/add-to-collection`}
+          href={`/${user.username}/sketches/${project?.id}/add-to-collection`}
         >
           {t('Nav.File.AddToCollection')}
         </NavMenuItem>

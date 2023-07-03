@@ -10,21 +10,21 @@ const Header = (props) => {
   const project = useSelector((state) => state.project);
 
   return (
-    <MediaQuery minWidth={770}>
-      {(matches) =>
-        matches ? (
-          <>
-            <NavV2 />
-            <ToolbarV2
-              syncFileContent={props.syncFileContent}
-              key={project.id}
-            />
-          </>
-        ) : (
-          <MobileNav />
-        )
-      }
-    </MediaQuery>
+    <header style={{ zIndex: 1 }}>
+      <NavV2 />
+      <MediaQuery minWidth={770}>
+        {(matches) => {
+          if (matches)
+            return (
+              <ToolbarV2
+                syncFileContent={props.syncFileContent}
+                key={project.id}
+              />
+            );
+          return null;
+        }}
+      </MediaQuery>
+    </header>
   );
 };
 

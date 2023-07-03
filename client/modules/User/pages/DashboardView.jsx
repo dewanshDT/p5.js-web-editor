@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 
 import Button from '../../../common/Button';
-import Nav from '../../IDE/components/Nav';
 import Overlay from '../../App/components/Overlay';
 import AssetList from '../../IDE/components/AssetList';
 import AssetSize from '../../IDE/components/AssetSize';
@@ -21,6 +20,7 @@ import CollectionCreate from '../components/CollectionCreate';
 import DashboardTabSwitcherPublic, {
   TabKey
 } from '../components/DashboardTabSwitcher';
+import NavV2 from '../../IDE/components/Header/NavV2';
 
 class DashboardView extends React.Component {
   static defaultProps = {
@@ -120,7 +120,7 @@ class DashboardView extends React.Component {
 
     return (
       <RootPage fixedHeight="100%">
-        <Nav layout="dashboard" />
+        <NavV2 layout="dashboard" />
 
         <main className="dashboard-header">
           <div className="dashboard-header__header">

@@ -7,8 +7,8 @@ import PrivacyPolicy from './PrivacyPolicy';
 import TermsOfUse from './TermsOfUse';
 import CodeOfConduct from './CodeOfConduct';
 import RootPage from '../../../components/RootPage';
-import Nav from '../components/Nav';
 import { remSize, prop } from '../../../theme';
+import NavV2 from '../components/Header/NavV2';
 
 const StyledTabList = styled(TabList)`
   display: flex;
@@ -60,7 +60,7 @@ function Legal() {
 
   return (
     <RootPage>
-      <Nav layout="dashboard" />
+      <NavV2 layout="dashboard" />
       <Tabs selectedIndex={selectedIndex} onSelect={onSelect}>
         <StyledTabList>
           <Tab>

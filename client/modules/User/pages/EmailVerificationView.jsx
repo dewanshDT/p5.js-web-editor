@@ -6,8 +6,8 @@ import { withTranslation } from 'react-i18next';
 import get from 'lodash/get';
 import { Helmet } from 'react-helmet';
 import { verifyEmailConfirmation } from '../actions';
-import Nav from '../../IDE/components/Nav';
 import RootPage from '../../../components/RootPage';
+import NavV2 from '../../IDE/components/Header/NavV2';
 
 class EmailVerificationView extends React.Component {
   static defaultProps = {
@@ -40,7 +40,7 @@ class EmailVerificationView extends React.Component {
 
     return (
       <RootPage>
-        <Nav layout="dashboard" />
+        <NavV2 layout="dashboard" />
         <div className="form-container">
           <Helmet>
             <title>{this.props.t('EmailVerificationView.Title')}</title>
