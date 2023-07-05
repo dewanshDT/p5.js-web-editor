@@ -7,12 +7,13 @@ import PropTypes from 'prop-types';
 import { prop, remSize } from '../../../../theme';
 import AstriskIcon from '../../../../images/p5-asterisk.svg';
 import IconButton from '../../../../components/mobile/IconButton';
-import { AccountIcon, MoreIcon } from '../../../../common/icons';
+import { AccountIcon, EditorIcon, MoreIcon } from '../../../../common/icons';
 import { newFile, newFolder, openPreferences } from '../../actions/ide';
 import { logoutUser } from '../../../User/actions';
 import { useSketchActions } from '../../hooks';
 import { selectRootFile } from '../../selectors/files';
 import { CmControllerContext } from '../../pages/IDEViewV2';
+import { selectSketchPath } from '../../selectors/project';
 
 const Nav = styled.div`
   background: ${prop('MobilePanel.default.background')};
@@ -148,6 +149,7 @@ const MobileNav = (props) => {
   const navigate = useNavigate();
 
   const { pathname } = useLocation();
+  const editorLink = useSelector(selectSketchPath);
 
   function resolveTitle(path) {
     switch (path) {
@@ -200,7 +202,18 @@ const MobileNav = (props) => {
             />
           </div>
         )}
-        <MoreMenu />
+        {title === project.name ? (
+          <MoreMenu />
+        ) : (
+          <div>
+            <IconButton
+              onClick={() => {
+                navigate(editorLink);
+              }}
+              icon={EditorIcon}
+            />
+          </div>
+        )}
       </Options>
     </Nav>
   );
