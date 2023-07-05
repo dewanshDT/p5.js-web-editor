@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import MediaQuery from 'react-responsive';
-import MobileNav from './MobileNav';
 import NavV2 from './NavV2';
 import ToolbarV2 from './ToolbarV2';
 

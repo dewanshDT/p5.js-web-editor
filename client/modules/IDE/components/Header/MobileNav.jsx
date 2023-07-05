@@ -1,8 +1,8 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 import PropTypes from 'prop-types';
 import { prop, remSize } from '../../../../theme';
 import AstriskIcon from '../../../../images/p5-asterisk.svg';
@@ -43,7 +43,7 @@ const LogoContainer = styled.div`
   }
 `;
 
-const Info = styled.div`
+const Title = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${remSize(2)};
@@ -144,7 +144,36 @@ const Options = styled.div`
 const MobileNav = (props) => {
   const project = useSelector((state) => state.project);
   const user = useSelector((state) => state.user);
+  const [title, setTitle] = useState();
   const navigate = useNavigate();
+
+  const { pathname } = useLocation();
+
+  function resolveTitle(path) {
+    switch (path) {
+      case '/':
+        return project.name;
+      case '/login':
+        return 'Login';
+      case '/signup':
+        return 'Signup';
+      case '/account':
+        return 'Account Settings';
+      case '/p5/sketches':
+      case '/p5/collections':
+        return 'Examples';
+      case `/${user.username}/assets`:
+      case `/${user.username}/collections`:
+      case `/${user.username}/sketches`:
+        return 'My Stuff';
+      default:
+        return project.name;
+    }
+  }
+
+  useEffect(() => {
+    setTitle(resolveTitle(pathname));
+  }, [pathname]);
 
   const Logo = AstriskIcon;
   return (
@@ -152,10 +181,12 @@ const MobileNav = (props) => {
       <LogoContainer>
         <Logo />
       </LogoContainer>
-      <Info>
-        <h1>{project.name}</h1>
-        {project?.owner && <h5>by {project?.owner?.username}</h5>}
-      </Info>
+      <Title>
+        <h1>{title}</h1>
+        {project?.owner && title === project.name && (
+          <h5>by {project?.owner?.username}</h5>
+        )}
+      </Title>
       <Options>
         {user.authenticated ? (
           <AccoutnMenu />
