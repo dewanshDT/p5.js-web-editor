@@ -4,15 +4,14 @@ import { Helmet } from 'react-helmet';
 import { useTranslation } from 'react-i18next';
 import SignupForm from '../components/SignupForm';
 import SocialAuthButton from '../components/SocialAuthButton';
-import Nav from '../../IDE/components/Nav';
 import RootPage from '../../../components/RootPage';
-import NavV2 from '../../IDE/components/Header/NavV2';
+import Nav from '../../IDE/components/Header/Nav';
 
 function SignupView() {
   const { t } = useTranslation();
   return (
     <RootPage>
-      <NavV2 layout="dashboard" />
+      <Nav layout="dashboard" />
       <main className="form-container">
         <Helmet>
           <title>{t('SignupView.Title')}</title>

@@ -26,7 +26,7 @@ import StopIcon from '../../../../images/stop.svg';
 import PreferencesIcon from '../../../../images/preferences.svg';
 import EditProjectNameIcon from '../../../../images/pencil.svg';
 
-const ToolbarV2 = (props) => {
+const Toolbar = (props) => {
   const { isPlaying, infiniteLoop, preferencesIsVisible } = useSelector(
     (state) => state.ide
   );
@@ -182,8 +182,8 @@ const ToolbarV2 = (props) => {
   );
 };
 
-ToolbarV2.propTypes = {
+Toolbar.propTypes = {
   syncFileContent: PropTypes.func.isRequired
 };
 
-export default ToolbarV2;
+export default Toolbar;

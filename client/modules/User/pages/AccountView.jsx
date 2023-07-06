@@ -13,7 +13,7 @@ import APIKeyForm from '../components/APIKeyForm';
 import ErrorModal from '../../IDE/components/ErrorModal';
 import Overlay from '../../App/components/Overlay';
 import Toast from '../../IDE/components/Toast';
-import NavV2 from '../../IDE/components/Header/NavV2';
+import Nav from '../../IDE/components/Header/Nav';
 
 function SocialLoginPanel() {
   const { t } = useTranslation();
@@ -65,7 +65,7 @@ function AccountView() {
       </Helmet>
       <Toast />
 
-      <NavV2 layout="dashboard" />
+      <Nav layout="dashboard" />
 
       {showError && (
         <Overlay

@@ -7,7 +7,7 @@ import RootPage from '../../../components/RootPage';
 
 import CollectionCreate from '../components/CollectionCreate';
 import Collection from '../components/Collection';
-import NavV2 from '../../IDE/components/Header/NavV2';
+import Nav from '../../IDE/components/Header/Nav';
 
 class CollectionView extends React.Component {
   static defaultProps = {
@@ -55,7 +55,7 @@ class CollectionView extends React.Component {
   render() {
     return (
       <RootPage>
-        <NavV2 layout="dashboard" />
+        <Nav layout="dashboard" />
 
         {this.renderContent()}
       </RootPage>

@@ -20,7 +20,7 @@ import CollectionCreate from '../components/CollectionCreate';
 import DashboardTabSwitcherPublic, {
   TabKey
 } from '../components/DashboardTabSwitcher';
-import NavV2 from '../../IDE/components/Header/NavV2';
+import Nav from '../../IDE/components/Header/Nav';
 
 class DashboardView extends React.Component {
   static defaultProps = {
@@ -120,7 +120,7 @@ class DashboardView extends React.Component {
 
     return (
       <RootPage fixedHeight="100%">
-        <NavV2 layout="dashboard" />
+        <Nav layout="dashboard" />
 
         <main className="dashboard-header">
           <div className="dashboard-header__header">

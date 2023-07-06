@@ -29,10 +29,10 @@ import {
 } from '../../actions/ide';
 import { selectRootFile } from '../../selectors/files';
 import { logoutUser } from '../../../User/actions';
-import { CmControllerContext } from '../../pages/IDEViewV2';
+import { CmControllerContext } from '../../pages/IDEView';
 import MobileNav from './MobileNav';
 
-const NavV2 = ({ layout }) => (
+const Nav = ({ layout }) => (
   <MediaQuery minWidth={770}>
     {(matches) =>
       matches ? (
@@ -47,11 +47,11 @@ const NavV2 = ({ layout }) => (
   </MediaQuery>
 );
 
-NavV2.propTypes = {
+Nav.propTypes = {
   layout: PropTypes.oneOf(['dashboard', 'project'])
 };
 
-NavV2.defaultProps = {
+Nav.defaultProps = {
   layout: 'project'
 };
 
@@ -317,4 +317,4 @@ const AuthenticatedUserMenu = () => {
   );
 };
 
-export default NavV2;
+export default Nav;

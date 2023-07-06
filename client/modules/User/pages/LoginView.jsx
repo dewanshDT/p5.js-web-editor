@@ -5,13 +5,13 @@ import { useTranslation } from 'react-i18next';
 import LoginForm from '../components/LoginForm';
 import SocialAuthButton from '../components/SocialAuthButton';
 import RootPage from '../../../components/RootPage';
-import NavV2 from '../../IDE/components/Header/NavV2';
+import Nav from '../../IDE/components/Header/Nav';
 
 function LoginView() {
   const { t } = useTranslation();
   return (
     <RootPage>
-      <NavV2 layout="dashboard" />
+      <Nav layout="dashboard" />
       <main className="form-container">
         <Helmet>
           <title>{t('LoginView.Title')}</title>

@@ -17,7 +17,7 @@ const RedirectToUser = React.lazy(() =>
   import('./components/createRedirectWithUsername')
 );
 const App = React.lazy(() => import('./modules/App/App'));
-const IDEView = React.lazy(() => import('./modules/IDE/pages/IDEViewV2'));
+const IDEView = React.lazy(() => import('./modules/IDE/pages/IDEView'));
 const MobileIDEView = React.lazy(() =>
   import('./modules/IDE/pages/MobileIDEView')
 );

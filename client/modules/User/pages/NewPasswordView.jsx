@@ -7,7 +7,7 @@ import { useParams } from 'react-router-dom';
 import NewPasswordForm from '../components/NewPasswordForm';
 import { validateResetPasswordToken } from '../actions';
 import RootPage from '../../../components/RootPage';
-import NavV2 from '../../IDE/components/Header/NavV2';
+import Nav from '../../IDE/components/Header/Nav';
 
 function NewPasswordView() {
   const { t } = useTranslation();
@@ -30,7 +30,7 @@ function NewPasswordView() {
   });
   return (
     <RootPage>
-      <NavV2 layout="dashboard" />
+      <Nav layout="dashboard" />
       <div className={newPasswordClass}>
         <Helmet>
           <title>{t('NewPasswordView.Title')}</title>
