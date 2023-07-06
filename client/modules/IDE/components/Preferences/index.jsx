@@ -18,7 +18,8 @@ import {
   setLineNumbers,
   setLintWarning,
   setAutocloseBracketsQuotes,
-  setLinewrap
+  setLinewrap,
+  setAutocompleteHinter
 } from '../../actions/preferences';
 
 export default function Preferences({ className }) {
@@ -35,7 +36,8 @@ export default function Preferences({ className }) {
     textOutput,
     gridOutput,
     theme,
-    autocloseBracketsQuotes
+    autocloseBracketsQuotes,
+    autocompleteHinter
   } = useSelector((state) => state.preferences);
 
   const validateFontSize = (number) => {
@@ -245,6 +247,45 @@ export default function Preferences({ className }) {
               />
               <label
                 htmlFor="autoclosebracketsquotes-off"
+                className="preference__option"
+              >
+                {t('Preferences.Off')}
+              </label>
+            </div>
+          </div>
+          <div className="preference">
+            <h4 className="preference__title">
+              {t('Preferences.AutocompleteHinter')}
+            </h4>
+            <div className="preference__options">
+              <input
+                type="radio"
+                onChange={() => dispatch(setAutocompleteHinter(true))}
+                aria-label={t('Preferences.AutocompleteHinterOnARIA')}
+                name="autocompletehinter"
+                id="autocompletehinter-on"
+                className="preference__radio-button"
+                value="On"
+                checked={autocompleteHinter}
+              />
+              <label
+                htmlFor="autocompletehinter-on"
+                className="preference__option"
+              >
+                {t('Preferences.On')}
+              </label>
+              <input
+                type="radio"
+                onChange={() => dispatch(setAutocompleteHinter(false))}
+                aria-label={t('Preferences.AutocompleteHinterOffARIA')}
+                name="autocompletehinter"
+                id="autocompletehinter-off"
+                className="preference__radio-button"
+                value="Off"
+                checked={!autocompleteHinter}
+              />
+              <label
+                htmlFor="autocompletehinter-off"
                 className="preference__option"
               >
                 {t('Preferences.Off')}
