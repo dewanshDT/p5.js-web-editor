@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
+  useBeforeUnload,
   unstable_useBlocker as useBlocker,
   useLocation
 } from 'react-router-dom';
@@ -62,6 +63,7 @@ function WarnIfUnsavedChanges() {
 
   const currentLocation = useLocation();
 
+  // blocker handles internal navigation between pages.
   const blocker = useBlocker(hasUnsavedChanges);
 
   useEffect(() => {
@@ -84,6 +86,23 @@ function WarnIfUnsavedChanges() {
       }
     }
   }, [blocker, currentLocation.pathname, t, hasUnsavedChanges]);
+
+  // beforeunload handles closing or refreshing the window.
+  const handleUnload = useCallback(
+    (e) => {
+      if (hasUnsavedChanges) {
+        // See: https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeunload_event#browser_compatibility
+        e.preventDefault();
+        const confirmationMessage = t('Nav.WarningUnsavedChanges');
+        e.returnValue = confirmationMessage;
+        return confirmationMessage;
+      }
+      return null;
+    },
+    [t, hasUnsavedChanges]
+  );
+
+  useBeforeUnload(handleUnload);
 
   return null;
 }
@@ -120,15 +139,6 @@ const IDEViewV2 = (props) => {
     project_id: props.params.project_id
   });
 
-  const handleBeforeUnload = (e) => {
-    const confirmationMessage = t('Nav.WarningUnsavedChanges');
-    if (ide.unsavedChanges) {
-      (e || window.event).returnValue = confirmationMessage;
-      return confirmationMessage;
-    }
-    return null;
-  };
-
   const syncFileContent = () => {
     const file = cmRef.current.getContent();
     dispatch(updateFileContent(file.id, file.content));
@@ -144,15 +154,6 @@ const IDEViewV2 = (props) => {
         dispatch(getProject(id, username));
       }
     }
-
-    window.addEventListener('beforeunload', handleBeforeUnload);
-
-    let autosaveInterval = null;
-
-    return () => {
-      clearTimeout(autosaveInterval);
-      autosaveInterval = null;
-    };
   }, []);
 
   // for setting previous location
