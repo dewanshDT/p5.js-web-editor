@@ -10,7 +10,6 @@ import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet';
 import SplitPane from 'react-split-pane';
 import MediaQuery from 'react-responsive';
-import Editor from '../components/Editor';
 import IDEKeyHandlers from '../components/IDEKeyHandlers';
 import Sidebar from '../components/Sidebar';
 import PreviewFrame from '../components/PreviewFrame';
@@ -275,7 +274,7 @@ const IDEView = (props) => {
                     allowResize={ide.consoleIsExpanded}
                     className="editor-preview-subpanel"
                   >
-                    <Editor
+                    <EditorV2
                       provideController={(ctl) => {
                         cmRef.current = ctl;
                       }}

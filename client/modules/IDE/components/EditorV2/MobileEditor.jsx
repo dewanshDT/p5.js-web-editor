@@ -66,7 +66,7 @@ export const FileDrawer = styled.div`
     background-color: #0005;
     height: 100%;
     width: 100%;
-    z-index: 9;
+    z-index: 2;
     transform: translateX(100%);
   }
 

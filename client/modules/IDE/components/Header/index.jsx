@@ -9,7 +9,7 @@ const Header = (props) => {
   const project = useSelector((state) => state.project);
 
   return (
-    <header style={{ zIndex: 1 }}>
+    <header style={{ zIndex: 10 }}>
       <Nav />
       <MediaQuery minWidth={770}>
         {(matches) => {
