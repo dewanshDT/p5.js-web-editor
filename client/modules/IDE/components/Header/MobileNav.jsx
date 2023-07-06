@@ -12,7 +12,7 @@ import { newFile, newFolder, openPreferences } from '../../actions/ide';
 import { logoutUser } from '../../../User/actions';
 import { useSketchActions } from '../../hooks';
 import { selectRootFile } from '../../selectors/files';
-import { CmControllerContext } from '../../pages/IDEViewV2';
+import { CmControllerContext } from '../../pages/IDEView';
 import { selectSketchPath } from '../../selectors/project';
 
 const Nav = styled.div`
@@ -175,7 +175,7 @@ const MobileNav = (props) => {
 
   useEffect(() => {
     setTitle(resolveTitle(pathname));
-  }, [pathname]);
+  }, [pathname, project]);
 
   const Logo = AstriskIcon;
   return (
